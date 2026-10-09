@@ -1,3 +1,4 @@
+import base64
 import os
 from PIL import Image
 import pandas as pd
@@ -72,7 +73,6 @@ st.markdown(
         font-size: 0.95rem;
         margin-bottom: 4px;
     }
-    /* تصميم الصورة الدائرية الاحترافية */
     .profile-img-container {
         display: flex;
         justify-content: center;
@@ -172,9 +172,6 @@ if page == "Profile":
             "profile.jpg.jpg" if os.path.exists("profile.jpg.jpg") else "profile.jpg"
         )
         if os.path.exists(img_path):
-            import base64
-
-            # تحويل الصورة إلى Base64 لعرضها كـ HTML بدقة وجودة عالية
             with open(img_path, "rb") as image_file:
                 encoded_string = base64.b64encode(image_file.read()).decode()
 
@@ -199,8 +196,7 @@ if page == "Profile":
             unsafe_allow_html=True,
         )
         st.markdown(
-            '<div class="location-info">📍 Damietta, Egypt | ✉️ mohgamgha@gmail.com'
-            " | 📞 +20 1127075974</div>",
+            '<div class="location-info">📍 Damietta, Egypt | ✉️ mohgamgha@gmail.com | 📞 +20 1127075974</div>',
             unsafe_allow_html=True,
         )
 
@@ -211,7 +207,6 @@ if page == "Profile":
             monitoring operational KPIs, and delivering interactive web dashboards that support data-driven decision-making.
             """)
 
-        # اسم ملف الـ CV الجديد
         cv_filename = "Mohamed Gamal - Data Analyst CV.pdf"
         if os.path.exists(cv_filename):
             with open(cv_filename, "rb") as pdf_file:
@@ -222,7 +217,6 @@ if page == "Profile":
                     mime="application/pdf",
                 )
         else:
-            # بديل في حالة تسمية الملف برمز آخر
             alt_cv = "Mohamed_gamal_mahmoud_Ebrahim_Naukrigulf_CV_09Oct2026.pdf"
             if os.path.exists(alt_cv):
                 with open(alt_cv, "rb") as pdf_file:
@@ -234,8 +228,7 @@ if page == "Profile":
                     )
 
     st.markdown(
-        '<div class="section-header">🛠️ Technical Skills & Core'
-        " Competencies</div>",
+        '<div class="section-header">🛠️ Technical Skills & Core Competencies</div>',
         unsafe_allow_html=True,
     )
     c1, c2, c3, c4 = st.columns(4)
@@ -269,4 +262,109 @@ if page == "Profile":
                 </ul>
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
+        )
+
+    with c3:
+        st.markdown(
+            """
+            <div class="skill-card">
+                <h4>📊 BI & Web Apps</h4>
+                <ul>
+                    <li>Streamlit Dashboards</li>
+                    <li>Power BI Reports</li>
+                    <li>Advanced Excel</li>
+                    <li>Pivot Tables & Formulas</li>
+                </ul>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    with c4:
+        st.markdown(
+            """
+            <div class="skill-card">
+                <h4>🏥 Healthcare Domain</h4>
+                <ul>
+                    <li>EHR / EMR Systems</li>
+                    <li>Health Statistics & Metrics</li>
+                    <li>Hospital Operational KPIs</li>
+                    <li>Billing Analytics</li>
+                </ul>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    st.markdown(
+        '<div class="section-header">💼 Professional Experience</div>',
+        unsafe_allow_html=True,
+    )
+    st.write("""
+        * **Statistical & Medical Records Technician / Data Analyst — Ministry of Health (Oct 2024 - Present | Damietta, Egypt):**
+          * Manage and maintain EHR/EMR databases, ensuring high data accuracy and integrity across patient medical records.
+          * Extract and analyze monthly operational hospital metrics (patient volume, length of stay, bed occupancy rates).
+          * Develop data visualizations and statistical reports to facilitate data-driven decisions for healthcare administrative teams.
+
+        * **Data Analytics Specialist (Healthcare Unit) — Basatin Health Unit (Mar 2023 - Oct 2024 | Damietta, Egypt):**
+          * Handled health statistics, patient intake record validation, and data cleaning for regional primary care operations.
+          * Optimized reporting efficiency by building automated data consolidation workflows using Python and Advanced Excel.
+        """)
+
+    col_edu, col_lang = st.columns(2)
+    with col_edu:
+        st.markdown(
+            '<div class="section-header">🎓 Education</div>',
+            unsafe_allow_html=True,
+        )
+        st.write("""
+            * **Diploma in Medical Informatics & Health Records Management**  
+              *Technical Institute of Health — Port Said, Egypt (Graduated: 2023)*
+            """)
+
+    with col_lang:
+        st.markdown(
+            '<div class="section-header">🌐 Languages</div>',
+            unsafe_allow_html=True,
+        )
+        st.write("""
+            * **Arabic:** Native  
+            * **English:** Professional Working Proficiency
+            """)
+
+# ---------------------------------------------------------
+# PAGE 2: Healthcare Billing Analytics
+# ---------------------------------------------------------
+elif page == "Healthcare Billing Analytics":
+    st.markdown(
+        '<div class="main-title">🏥 Healthcare Billing Dashboard</div>',
+        unsafe_allow_html=True,
+    )
+    st.write(
+        "Interactive analytics for medical billing, specialty distribution, and insurance claims."
+    )
+
+    df_health = get_healthcare_data()
+
+    st.sidebar.markdown("### 🔍 Filters")
+    selected_spec = st.sidebar.multiselect(
+        "Specialty:",
+        df_health["Specialty"].unique(),
+        default=df_health["Specialty"].unique(),
+    )
+    selected_ins = st.sidebar.multiselect(
+        "Insurance Provider:",
+        df_health["Insurance_Provider"].unique(),
+        default=df_health["Insurance_Provider"].unique(),
+    )
+
+    filtered_health = df_health[
+        (df_health["Specialty"].isin(selected_spec))
+        & (df_health["Insurance_Provider"].isin(selected_ins))
+    ]
+
+    kpi1, kpi2, kpi3, kpi4 = st.columns(4)
+    kpi1.metric("Total Patients", f"{len(filtered_health):,}")
+    kpi2.metric(
+        "Total
