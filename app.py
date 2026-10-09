@@ -341,9 +341,7 @@ elif page == "Healthcare Billing Analytics":
         '<div class="main-title">🏥 Healthcare Billing Dashboard</div>',
         unsafe_allow_html=True,
     )
-    st.write(
-        "Interactive analytics for medical billing, specialty distribution, and insurance claims."
-    )
+    st.write("Interactive analytics for medical billing, specialty distribution, and insurance claims.")
 
     df_health = get_healthcare_data()
 
@@ -366,5 +364,104 @@ elif page == "Healthcare Billing Analytics":
 
     kpi1, kpi2, kpi3, kpi4 = st.columns(4)
     kpi1.metric("Total Patients", f"{len(filtered_health):,}")
-    kpi2.metric(
-        "Total
+    kpi2.metric("Total Billing Amount", f"${filtered_health['Billing_Amount'].sum():,.2f}")
+    kpi3.metric("Avg Length of Stay", f"{filtered_health['LOS_Days'].mean():.1f} Days")
+    kpi4.metric("Avg Bill Amount", f"${filtered_health['Billing_Amount'].mean():,.2f}")
+
+    st.markdown("---")
+
+    col_h1, col_h2 = st.columns(2)
+    with col_h1:
+        fig_spec = px.pie(
+            filtered_health,
+            names="Specialty",
+            values="Billing_Amount",
+            title="Billing Breakdown by Specialty",
+            hole=0.4,
+            template="plotly_dark",
+        )
+        st.plotly_chart(fig_spec, use_container_width=True)
+
+    with col_h2:
+        df_ins = (
+            filtered_health.groupby("Insurance_Provider")["Billing_Amount"]
+            .sum()
+            .reset_index()
+        )
+        fig_ins = px.bar(
+            df_ins,
+            x="Insurance_Provider",
+            y="Billing_Amount",
+            color="Insurance_Provider",
+            title="Claims by Insurance Provider",
+            template="plotly_dark",
+        )
+        st.plotly_chart(fig_ins, use_container_width=True)
+
+# ---------------------------------------------------------
+# PAGE 3: AdventureWorks Sales Analytics
+# ---------------------------------------------------------
+elif page == "AdventureWorks Sales Analytics":
+    st.markdown(
+        '<div class="main-title">🛒 AdventureWorks Sales Dashboard</div>',
+        unsafe_allow_html=True,
+    )
+    st.write("Sales analytics dashboard for evaluating commercial performance, revenue trends, and regional distributions.")
+
+    df_sales = get_sales_data()
+
+    st.sidebar.markdown("### 🔍 Filters")
+    selected_cat = st.sidebar.multiselect(
+        "Product Category:",
+        df_sales["Category"].unique(),
+        default=df_sales["Category"].unique(),
+    )
+    selected_reg = st.sidebar.multiselect(
+        "Region:",
+        df_sales["Region"].unique(),
+        default=df_sales["Region"].unique(),
+    )
+
+    filtered_sales = df_sales[
+        (df_sales["Category"].isin(selected_cat))
+        & (df_sales["Region"].isin(selected_reg))
+    ]
+
+    s1, s2, s3 = st.columns(3)
+    s1.metric("Total Revenue", f"${filtered_sales['SalesAmount'].sum():,.2f}")
+    s2.metric("Total Orders", f"{len(filtered_sales):,}")
+    s3.metric("Avg Order Value", f"${filtered_sales['SalesAmount'].mean():,.2f}")
+
+    st.markdown("---")
+
+    col_s1, col_s2 = st.columns(2)
+    with col_s1:
+        monthly_sales = (
+            filtered_sales.groupby("YearMonth")["SalesAmount"]
+            .sum()
+            .reset_index()
+            .sort_values("YearMonth")
+        )
+        fig_trend = px.line(
+            monthly_sales,
+            x="YearMonth",
+            y="SalesAmount",
+            title="Monthly Sales Trend",
+            markers=True,
+            template="plotly_dark",
+        )
+        st.plotly_chart(fig_trend, use_container_width=True)
+
+    with col_s2:
+        df_reg = (
+            filtered_sales.groupby("Region")["SalesAmount"].sum().reset_index()
+        )
+        fig_reg = px.bar(
+            df_reg,
+            x="Region",
+            y="SalesAmount",
+            color="Region",
+            title="Revenue by Geographic Region",
+            template="plotly_dark",
+        )
+        st.plotly_chart(fig_reg, use_container_width=True)
