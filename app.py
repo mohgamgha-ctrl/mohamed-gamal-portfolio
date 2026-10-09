@@ -1,4 +1,3 @@
-import base64
 import os
 from PIL import Image
 import pandas as pd
@@ -73,19 +72,16 @@ st.markdown(
         font-size: 0.95rem;
         margin-bottom: 4px;
     }
-    .profile-img-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 20px;
-    }
-    .circular-profile-img {
-        width: 220px;
-        height: 220px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 4px solid #38BDF8;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    /* جعل صورة Streamlit دائرية بشكل مباشر ودقيق */
+    [data-testid="stImage"] img {
+        border-radius: 50% !important;
+        width: 210px !important;
+        height: 210px !important;
+        object-fit: cover !important;
+        border: 4px solid #38BDF8 !important;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3) !important;
+        margin: 0 auto !important;
+        display: block !important;
     }
     </style>
 """,
@@ -168,23 +164,17 @@ if page == "Profile":
     col_img, col_info = st.columns([1, 2.5])
 
     with col_img:
-        img_path = (
-            "profile.jpg.jpg" if os.path.exists("profile.jpg.jpg") else "profile.jpg"
-        )
-        if os.path.exists(img_path):
-            with open(img_path, "rb") as image_file:
-                encoded_string = base64.b64encode(image_file.read()).decode()
+        # البحث عن اسم الصورة المتاح في المجلد
+        img_file = None
+        for name in ["profile.jpg", "profile.jpeg", "profile.png", "profile.jpg.jpg"]:
+            if os.path.exists(name):
+                img_file = name
+                break
 
-            st.markdown(
-                f"""
-                <div class="profile-img-container">
-                    <img src="data:image/jpeg;base64,{encoded_string}" class="circular-profile-img" alt="Profile Image">
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+        if img_file:
+            st.image(img_file)
         else:
-            st.info("📷 Profile Image")
+            st.warning("⚠️ لم يتم العثور على ملف الصورة. يرجى التأكد من رفع صورة باسم 'profile.jpg' في مجلد المشروع.")
 
     with col_info:
         st.markdown(
