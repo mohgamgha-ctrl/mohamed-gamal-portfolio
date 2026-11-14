@@ -15,53 +15,115 @@ st.set_page_config(
 )
 
 # ---------------------------------------------------------
-# Custom Styling (CSS) - Dark & Light Mode Compatible
+# Custom Styling (CSS) - Modern Dark Neon Hero & Finovate Theme
 # ---------------------------------------------------------
 st.markdown(
     """
     <style>
+    /* Main App Background */
+    .stApp, .main {
+        background-color: #060B19 !important;
+    }
+    
+    /* Sidebar Styling */
     [data-testid="stSidebar"] {
+        background-color: #091124 !important;
+        border-right: 1px solid #18294A;
         padding-top: 1.5rem;
     }
-    .main-title {
-        font-size: 2.2rem;
+    [data-testid="stSidebar"] * {
+        color: #E2E8F0 !important;
+    }
+    
+    /* Hero Section Container with Neon Glow */
+    .hero-container {
+        background: linear-gradient(145deg, #0D182E 0%, #0A1324 100%);
+        border: 1px solid #1E355E;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 0 35px rgba(56, 189, 248, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        margin-bottom: 30px;
+    }
+    
+    .hero-title {
+        font-size: 2.8rem !important;
+        font-weight: 800 !important;
+        color: #FFFFFF !important;
+        margin-bottom: 5px;
+        text-shadow: 0 2px 12px rgba(56, 189, 248, 0.4);
+    }
+    
+    .hero-subtitle {
+        font-size: 1.4rem !important;
+        font-weight: 600 !important;
+        color: #38BDF8 !important;
+        margin-bottom: 15px;
+    }
+    
+    .hero-desc {
+        font-size: 1.05rem !important;
+        color: #94A3B8 !important;
+        line-height: 1.6;
+        margin-bottom: 25px;
+    }
+    
+    /* Stats Bar (Bottom of Hero) */
+    .stats-container {
+        display: flex;
+        justify-content: space-around;
+        background: rgba(13, 24, 46, 0.7);
+        border: 1px solid #1E355E;
+        border-radius: 14px;
+        padding: 20px;
+        margin-top: 30px;
+        box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
+    }
+    .stat-box {
+        text-align: center;
+    }
+    .stat-number {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #00E5B0;
+    }
+    .stat-label {
+        font-size: 0.9rem;
+        color: #94A3B8;
+        font-weight: 500;
+    }
+
+    /* Section Headers */
+    .section-header {
+        font-size: 1.6rem;
         font-weight: 700;
         color: #38BDF8 !important;
-        margin-bottom: 5px;
-    }
-    .sub-title {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #94A3B8 !important;
-        margin-bottom: 10px;
-    }
-    .location-info {
-        font-size: 0.95rem;
-        color: #CBD5E1 !important;
+        border-bottom: 2px solid #1E355E;
+        padding-bottom: 8px;
+        margin-top: 35px;
         margin-bottom: 20px;
     }
-    .section-header {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #38BDF8 !important;
-        border-bottom: 2px solid #0284C7;
-        padding-bottom: 8px;
-        margin-top: 25px;
-        margin-bottom: 15px;
-    }
+    
+    /* Skill Cards */
     .skill-card {
-        background-color: #1E293B !important;
+        background: linear-gradient(145deg, #0D182E 0%, #0A1324 100%) !important;
         color: #F8FAFC !important;
-        padding: 18px;
-        border-radius: 10px;
-        border-left: 4px solid #38BDF8;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+        padding: 20px;
+        border-radius: 14px;
+        border: 1px solid #1E355E;
+        box-shadow: 0 0 20px rgba(56, 189, 248, 0.12);
         margin-bottom: 15px;
         height: 100%;
+        transition: all 0.3s ease;
+    }
+    .skill-card:hover {
+        border-color: #38BDF8;
+        box-shadow: 0 0 30px rgba(56, 189, 248, 0.35);
+        transform: translateY(-3px);
     }
     .skill-card h4 {
         color: #38BDF8 !important;
-        margin-bottom: 10px;
+        margin-bottom: 12px;
+        font-size: 1.15rem;
     }
     .skill-card ul {
         margin-bottom: 0;
@@ -70,16 +132,17 @@ st.markdown(
     .skill-card ul li {
         color: #CBD5E1 !important;
         font-size: 0.95rem;
-        margin-bottom: 4px;
+        margin-bottom: 6px;
     }
-    /* جعل صورة Streamlit دائرية بشكل مباشر ودقيق */
+    
+    /* Custom Profile Image Glow Border */
     [data-testid="stImage"] img {
         border-radius: 50% !important;
-        width: 210px !important;
-        height: 210px !important;
+        width: 230px !important;
+        height: 230px !important;
         object-fit: cover !important;
         border: 4px solid #38BDF8 !important;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3) !important;
+        box-shadow: 0 0 30px rgba(56, 189, 248, 0.5) !important;
         margin: 0 auto !important;
         display: block !important;
     }
@@ -92,7 +155,6 @@ st.markdown(
 # Sidebar Navigation
 # ---------------------------------------------------------
 st.sidebar.title("📌 Navigation")
-
 page = st.sidebar.radio(
     "Select Section:",
     [
@@ -101,7 +163,6 @@ page = st.sidebar.radio(
         "AdventureWorks Sales Analytics",
     ],
 )
-
 st.sidebar.markdown("---")
 
 
@@ -158,15 +219,22 @@ def get_sales_data():
 
 
 # ---------------------------------------------------------
-# PAGE 1: Profile
+# PAGE 1: Profile (Styled like the reference design)
 # ---------------------------------------------------------
 if page == "Profile":
-    col_img, col_info = st.columns([1, 2.5])
+    # Hero Section Box
+    st.markdown('<div class="hero-container">', unsafe_allow_html=True)
+
+    col_img, col_info = st.columns([1.1, 2.4], gap="medium")
 
     with col_img:
-        # البحث عن اسم الصورة المتاح في المجلد
         img_file = None
-        for name in ["profile.jpg", "profile.jpeg", "profile.png", "profile.jpg.jpg"]:
+        for name in [
+            "profile.jpg",
+            "profile.jpeg",
+            "profile.png",
+            "profile.jpg.jpg",
+        ]:
             if os.path.exists(name):
                 img_file = name
                 break
@@ -174,30 +242,33 @@ if page == "Profile":
         if img_file:
             st.image(img_file)
         else:
-            st.warning("⚠️ لم يتم العثور على ملف الصورة. يرجى التأكد من رفع صورة باسم 'profile.jpg' في مجلد المشروع.")
+            st.warning("⚠️ يرجى رفع صورة باسم 'profile.jpg'")
 
     with col_info:
         st.markdown(
-            '<div class="main-title">Mohamed Gamal Mahmoud</div>',
+            '<div style="color: #38BDF8; font-weight: 600; font-size: 1.1rem; margin-bottom: 5px;">Hello, I\'m</div>',
             unsafe_allow_html=True,
         )
         st.markdown(
-            '<div class="sub-title">Healthcare & Business Data Analyst</div>',
+            '<div class="hero-title">Mohamed Gamal</div>',
             unsafe_allow_html=True,
         )
         st.markdown(
-            '<div class="location-info">📍 Damietta, Egypt | ✉️ mohgamgha@gmail.com | 📞 +20 1127075974</div>',
+            '<div class="hero-subtitle">And I\'m a Healthcare & Business Data Analyst</div>',
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            '<div class="hero-desc">Data Analyst with over 2 years of experience in healthcare statistical management and business analytics. Specialized in leveraging Python, SQL, and Streamlit to transform complex data into actionable executive insights.</div>',
             unsafe_allow_html=True,
         )
 
-        st.write("""
-            Data Analyst with over 2 years of experience in healthcare statistical management and data analytics. 
-            Specialized in leveraging Python (Pandas, Plotly, Streamlit), SQL (SSMS), and Power BI to clean, analyze, 
-            and visualize complex healthcare billing and sales operations. Proven track record in optimizing hospital record-keeping, 
-            monitoring operational KPIs, and delivering interactive web dashboards that support data-driven decision-making.
-            """)
-
+        # Download CV Button inside Hero
         cv_filename = "Mohamed Gamal - Data Analyst CV.pdf"
+        if not os.path.exists(cv_filename):
+            cv_filename = (
+                "Mohamed_gamal_mahmoud_Ebrahim_Naukrigulf_CV_09Oct2026.pdf"
+            )
+
         if os.path.exists(cv_filename):
             with open(cv_filename, "rb") as pdf_file:
                 st.download_button(
@@ -206,17 +277,35 @@ if page == "Profile":
                     file_name="Mohamed_Gamal_Data_Analyst_CV.pdf",
                     mime="application/pdf",
                 )
-        else:
-            alt_cv = "Mohamed_gamal_mahmoud_Ebrahim_Naukrigulf_CV_09Oct2026.pdf"
-            if os.path.exists(alt_cv):
-                with open(alt_cv, "rb") as pdf_file:
-                    st.download_button(
-                        label="📄 Download CV",
-                        data=pdf_file,
-                        file_name="Mohamed_Gamal_CV.pdf",
-                        mime="application/pdf",
-                    )
 
+    st.markdown("</div>", unsafe_allow_html=True)  # End of Hero Container
+
+    # Stats Bar Section (Inspired by the reference image)
+    st.markdown(
+        """
+        <div class="stats-container">
+            <div class="stat-box">
+                <div class="stat-number">2+</div>
+                <div class="stat-label">Years of Experience</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">15+</div>
+                <div class="stat-label">Projects Completed</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">4+</div>
+                <div class="stat-label">Core Technologies</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Data Accuracy</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Technical Skills Section
     st.markdown(
         '<div class="section-header">🛠️ Technical Skills & Core Competencies</div>',
         unsafe_allow_html=True,
@@ -227,7 +316,7 @@ if page == "Profile":
         st.markdown(
             """
             <div class="skill-card">
-                <h4>🐍 Programming & Analytics</h4>
+                <h4>🐍 Programming</h4>
                 <ul>
                     <li>Python (Pandas, NumPy)</li>
                     <li>Data Cleaning & EDA</li>
@@ -243,11 +332,11 @@ if page == "Profile":
         st.markdown(
             """
             <div class="skill-card">
-                <h4>🗄️ SQL & Databases</h4>
+                <h4>🗄️ Databases</h4>
                 <ul>
                     <li>SQL Aggregations & Joins</li>
-                    <li>Subqueries & Window Functions</li>
-                    <li>Relational DBs (SSMS)</li>
+                    <li>Subqueries & Windows</li>
+                    <li>SQL Server (SSMS)</li>
                     <li>Data Transformation</li>
                 </ul>
             </div>
@@ -264,7 +353,7 @@ if page == "Profile":
                     <li>Streamlit Dashboards</li>
                     <li>Power BI Reports</li>
                     <li>Advanced Excel</li>
-                    <li>Pivot Tables & Formulas</li>
+                    <li>Pivot Tables</li>
                 </ul>
             </div>
             """,
@@ -275,11 +364,11 @@ if page == "Profile":
         st.markdown(
             """
             <div class="skill-card">
-                <h4>🏥 Healthcare Domain</h4>
+                <h4>🏥 Healthcare</h4>
                 <ul>
                     <li>EHR / EMR Systems</li>
-                    <li>Health Statistics & Metrics</li>
-                    <li>Hospital Operational KPIs</li>
+                    <li>Health Statistics</li>
+                    <li>Hospital KPIs</li>
                     <li>Billing Analytics</li>
                 </ul>
             </div>
@@ -287,6 +376,7 @@ if page == "Profile":
             unsafe_allow_html=True,
         )
 
+    # Professional Experience
     st.markdown(
         '<div class="section-header">💼 Professional Experience</div>',
         unsafe_allow_html=True,
@@ -328,10 +418,12 @@ if page == "Profile":
 # ---------------------------------------------------------
 elif page == "Healthcare Billing Analytics":
     st.markdown(
-        '<div class="main-title">🏥 Healthcare Billing Dashboard</div>',
+        '<div class="hero-title" style="font-size: 2.2rem !important;">🏥 Healthcare Billing Dashboard</div>',
         unsafe_allow_html=True,
     )
-    st.write("Interactive analytics for medical billing, specialty distribution, and insurance claims.")
+    st.write(
+        "Interactive analytics for medical billing, specialty distribution, and insurance claims."
+    )
 
     df_health = get_healthcare_data()
 
@@ -354,9 +446,15 @@ elif page == "Healthcare Billing Analytics":
 
     kpi1, kpi2, kpi3, kpi4 = st.columns(4)
     kpi1.metric("Total Patients", f"{len(filtered_health):,}")
-    kpi2.metric("Total Billing Amount", f"${filtered_health['Billing_Amount'].sum():,.2f}")
-    kpi3.metric("Avg Length of Stay", f"{filtered_health['LOS_Days'].mean():.1f} Days")
-    kpi4.metric("Avg Bill Amount", f"${filtered_health['Billing_Amount'].mean():,.2f}")
+    kpi2.metric(
+        "Total Billing Amount", f"${filtered_health['Billing_Amount'].sum():,.2f}"
+    )
+    kpi3.metric(
+        "Avg Length of Stay", f"{filtered_health['LOS_Days'].mean():.1f} Days"
+    )
+    kpi4.metric(
+        "Avg Bill Amount", f"${filtered_health['Billing_Amount'].mean():,.2f}"
+    )
 
     st.markdown("---")
 
@@ -393,10 +491,12 @@ elif page == "Healthcare Billing Analytics":
 # ---------------------------------------------------------
 elif page == "AdventureWorks Sales Analytics":
     st.markdown(
-        '<div class="main-title">🛒 AdventureWorks Sales Dashboard</div>',
+        '<div class="hero-title" style="font-size: 2.2rem !important;">🛒 AdventureWorks Sales Dashboard</div>',
         unsafe_allow_html=True,
     )
-    st.write("Sales analytics dashboard for evaluating commercial performance, revenue trends, and regional distributions.")
+    st.write(
+        "Sales analytics dashboard for evaluating commercial performance, revenue trends, and regional distributions."
+    )
 
     df_sales = get_sales_data()
 
@@ -444,7 +544,9 @@ elif page == "AdventureWorks Sales Analytics":
 
     with col_s2:
         df_reg = (
-            filtered_sales.groupby("Region")["SalesAmount"].sum().reset_index()
+            filtered_sales.groupby("Region")["SalesAmount"]
+            .sum()
+            .reset_index()
         )
         fig_reg = px.bar(
             df_reg,
