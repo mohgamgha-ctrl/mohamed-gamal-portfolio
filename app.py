@@ -135,7 +135,7 @@ st.markdown(
         margin-bottom: 6px;
     }
     
-    /* إزالة أي خلفية بيضاء وضبط الصورة الدائرية بإطار نيون متناسق */
+    /* إطار الصورة الدائرية وتأثير النيون */
     [data-testid="stImage"] img {
         border-radius: 50% !important;
         width: 230px !important;
@@ -234,16 +234,17 @@ if page == "Profile":
             "profile.png",
             "profile.jpg",
             "profile.jpeg",
-            "profile.jpg.jpg",
+            "Profile.jpg",
         ]:
             if os.path.exists(name):
                 img_file = name
                 break
 
         if img_file:
-            st.image(img_file)
+            # تم تعديل السطر لضمان عرض الصورة بأعلى جودة ودون ضغط
+            st.image(img_file, use_container_width=True)
         else:
-            st.warning("⚠️ يرجى رفع صورة باسم 'profile.png' أو 'profile.jpg'")
+            st.warning("⚠️ يرجى رفع صورة باسم 'profile.jpg' أو 'Profile.jpg'")
 
     with col_info:
         st.markdown(
@@ -558,40 +559,3 @@ elif page == "AdventureWorks Sales Analytics":
             template="plotly_dark",
         )
         st.plotly_chart(fig_reg, use_container_width=True)
-# Data Loaders
-# ---------------------------------------------------------
-@st.cache_data
-def get_healthcare_data():
-    import numpy as np
-
-    np.random.seed(42)
-    n = 300
-    specialties = ["Inpatient", "Outpatient", "Emergency", "Surgery", "ICU"]
-    insurance_providers = [
-        "Medicare",
-        "Medicaid",
-        "Private Insurance",
-        "Self-Pay",
-    ]
-
-    dates = pd.date_range(start="2025-01-01", periods=n, freq="D")
-    data = {
-        "Admission_Date": np.random.choice(dates, n),
-        "Specialty": np.random.choice(specialties, n, p=[0.3, 0.3, 0.2, 0.1, 0.1]),
-        "Insurance_Provider": np.random.choice(insurance_providers, n),
-        "Billing_Amount": np.random.uniform(500, 15000, n).round(2),
-        "LOS_Days": np.random.randint(1, 15, n),
-    }
-    df = pd.DataFrame(data)
-    df["YearMonth"] = df["Admission_Date"].dt.to_period("M").astype(str)
-    return df
-
-
-@st.cache_data
-def get_sales_data():
-    import numpy as np
-
-    np.random.seed(101)
-    n = 400
-    categories = ["Bikes", "Components", "Clothing", "Accessories"]
-    regions = ["North America", "Europe", "Pacific"]
