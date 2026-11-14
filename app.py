@@ -15,17 +15,14 @@ st.set_page_config(
 )
 
 # ---------------------------------------------------------
-# Custom Styling (CSS) - Modern Dark Neon Hero & Finovate Theme
+# Custom Styling (CSS)
 # ---------------------------------------------------------
 st.markdown(
     """
     <style>
-    /* Main App Background */
     .stApp, .main {
         background-color: #060B19 !important;
     }
-    
-    /* Sidebar Styling */
     [data-testid="stSidebar"] {
         background-color: #091124 !important;
         border-right: 1px solid #18294A;
@@ -34,17 +31,14 @@ st.markdown(
     [data-testid="stSidebar"] * {
         color: #E2E8F0 !important;
     }
-    
-    /* Hero Section Container with Neon Glow */
     .hero-container {
         background: linear-gradient(145deg, #0D182E 0%, #0A1324 100%);
         border: 1px solid #1E355E;
         border-radius: 20px;
         padding: 40px;
-        box-shadow: 0 0 35px rgba(56, 189, 248, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        box-shadow: 0 0 35px rgba(56, 189, 248, 0.2);
         margin-bottom: 30px;
     }
-    
     .hero-title {
         font-size: 2.8rem !important;
         font-weight: 800 !important;
@@ -52,22 +46,18 @@ st.markdown(
         margin-bottom: 5px;
         text-shadow: 0 2px 12px rgba(56, 189, 248, 0.4);
     }
-    
     .hero-subtitle {
         font-size: 1.4rem !important;
         font-weight: 600 !important;
         color: #38BDF8 !important;
         margin-bottom: 15px;
     }
-    
     .hero-desc {
         font-size: 1.05rem !important;
         color: #94A3B8 !important;
         line-height: 1.6;
         margin-bottom: 25px;
     }
-    
-    /* Stats Bar (Bottom of Hero) */
     .stats-container {
         display: flex;
         justify-content: space-around;
@@ -76,7 +66,6 @@ st.markdown(
         border-radius: 14px;
         padding: 20px;
         margin-top: 30px;
-        box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
     }
     .stat-box {
         text-align: center;
@@ -91,8 +80,6 @@ st.markdown(
         color: #94A3B8;
         font-weight: 500;
     }
-
-    /* Section Headers */
     .section-header {
         font-size: 1.6rem;
         font-weight: 700;
@@ -102,8 +89,6 @@ st.markdown(
         margin-top: 35px;
         margin-bottom: 20px;
     }
-    
-    /* Skill Cards */
     .skill-card {
         background: linear-gradient(145deg, #0D182E 0%, #0A1324 100%) !important;
         color: #F8FAFC !important;
@@ -113,29 +98,16 @@ st.markdown(
         box-shadow: 0 0 20px rgba(56, 189, 248, 0.12);
         margin-bottom: 15px;
         height: 100%;
-        transition: all 0.3s ease;
-    }
-    .skill-card:hover {
-        border-color: #38BDF8;
-        box-shadow: 0 0 30px rgba(56, 189, 248, 0.35);
-        transform: translateY(-3px);
     }
     .skill-card h4 {
         color: #38BDF8 !important;
         margin-bottom: 12px;
-        font-size: 1.15rem;
-    }
-    .skill-card ul {
-        margin-bottom: 0;
-        padding-left: 18px;
     }
     .skill-card ul li {
         color: #CBD5E1 !important;
         font-size: 0.95rem;
         margin-bottom: 6px;
     }
-    
-    /* إطار الصورة الدائرية وتأثير النيون */
     [data-testid="stImage"] img {
         border-radius: 50% !important;
         width: 230px !important;
@@ -153,7 +125,7 @@ st.markdown(
 )
 
 # ---------------------------------------------------------
-# Sidebar Navigation
+# Sidebar Navigation (طريقة الربط الأساسية)
 # ---------------------------------------------------------
 st.sidebar.title("📌 Navigation")
 page = st.sidebar.radio(
@@ -167,7 +139,7 @@ st.sidebar.markdown("---")
 
 
 # ---------------------------------------------------------
-# Data Loader for Olist E-Commerce
+# Data Loader for Olist Project
 # ---------------------------------------------------------
 @st.cache_data
 def get_olist_data():
@@ -206,27 +178,15 @@ def get_olist_data():
 # PAGE 1: Profile
 # ---------------------------------------------------------
 if page == "Profile":
-    # Hero Section Box
     st.markdown('<div class="hero-container">', unsafe_allow_html=True)
-
     col_img, col_info = st.columns([1.1, 2.4], gap="medium")
 
     with col_img:
-        img_file = None
-        for name in [
-            "profile.png",
-            "profile.jpg",
-            "profile.jpeg",
-            "Profile.jpg",
-        ]:
-            if os.path.exists(name):
-                img_file = name
-                break
-
-        if img_file:
+        img_file = "Profile.jpg" if os.path.exists("Profile.jpg") else "profile.jpg"
+        if os.path.exists(img_file):
             st.image(img_file, use_container_width=True)
         else:
-            st.warning("⚠️ يرجى رفع صورة باسم 'Profile.jpg'")
+            st.warning("⚠️ يرجى رفع صورة Profile.jpg")
 
     with col_info:
         st.markdown(
@@ -246,13 +206,7 @@ if page == "Profile":
             unsafe_allow_html=True,
         )
 
-        # Download CV Button inside Hero
         cv_filename = "Mohamed Gamal - Data Analyst CV.pdf"
-        if not os.path.exists(cv_filename):
-            cv_filename = (
-                "Mohamed_gamal_mahmoud_Ebrahim_Naukrigulf_CV_09Oct2026.pdf"
-            )
-
         if os.path.exists(cv_filename):
             with open(cv_filename, "rb") as pdf_file:
                 st.download_button(
@@ -262,9 +216,9 @@ if page == "Profile":
                     mime="application/pdf",
                 )
 
-    st.markdown("</div>", unsafe_allow_html=True)  # End of Hero Container
+    st.markdown("</div>", unsafe_allow_html=True)
 
-    # Stats Bar Section
+    # Stats Bar
     st.markdown(
         """
         <div class="stats-container">
@@ -289,7 +243,7 @@ if page == "Profile":
         unsafe_allow_html=True,
     )
 
-    # Technical Skills Section
+    # Technical Skills
     st.markdown(
         '<div class="section-header">🛠️ Technical Skills & Core Competencies</div>',
         unsafe_allow_html=True,
@@ -311,7 +265,6 @@ if page == "Profile":
             """,
             unsafe_allow_html=True,
         )
-
     with c2:
         st.markdown(
             """
@@ -327,7 +280,6 @@ if page == "Profile":
             """,
             unsafe_allow_html=True,
         )
-
     with c3:
         st.markdown(
             """
@@ -343,7 +295,6 @@ if page == "Profile":
             """,
             unsafe_allow_html=True,
         )
-
     with c4:
         st.markdown(
             """
@@ -360,43 +311,6 @@ if page == "Profile":
             unsafe_allow_html=True,
         )
 
-    # Professional Experience
-    st.markdown(
-        '<div class="section-header">💼 Professional Experience</div>',
-        unsafe_allow_html=True,
-    )
-    st.write("""
-        * **Statistical & Medical Records Technician / Data Analyst — Ministry of Health (Oct 2024 - Present | Damietta, Egypt):**
-          * Manage and maintain EHR/EMR databases, ensuring high data accuracy and integrity across patient medical records.
-          * Extract and analyze monthly operational hospital metrics (patient volume, length of stay, bed occupancy rates).
-          * Develop data visualizations and statistical reports to facilitate data-driven decisions for healthcare administrative teams.
-
-        * **Data Analytics Specialist (Healthcare Unit) — Basatin Health Unit (Mar 2023 - Oct 2024 | Damietta, Egypt):**
-          * Handled health statistics, patient intake record validation, and data cleaning for regional primary care operations.
-          * Optimized reporting efficiency by building automated data consolidation workflows using Python and Advanced Excel.
-        """)
-
-    col_edu, col_lang = st.columns(2)
-    with col_edu:
-        st.markdown(
-            '<div class="section-header">🎓 Education</div>',
-            unsafe_allow_html=True,
-        )
-        st.write("""
-            * **Diploma in Medical Informatics & Health Records Management**  
-              *Technical Institute of Health — Port Said, Egypt (Graduated: 2023)*
-            """)
-
-    with col_lang:
-        st.markdown(
-            '<div class="section-header">🌐 Languages</div>',
-            unsafe_allow_html=True,
-        )
-        st.write("""
-            * **Arabic:** Native  
-            * **English:** Professional Working Proficiency
-            """)
-
 # ---------------------------------------------------------
 # PAGE 2: Olist E-Commerce Analytics
 # ---------------------------------------------------------
@@ -411,7 +325,7 @@ elif page == "Olist E-Commerce Analytics":
 
     df_olist = get_olist_data()
 
-    # Sidebar Filters
+    # Filters inside sidebar when this page is active
     st.sidebar.markdown("### 🔍 Dashboard Filters")
     selected_year = st.sidebar.multiselect(
         "Select Year:",
@@ -435,7 +349,7 @@ elif page == "Olist E-Commerce Analytics":
         & (df_olist["Payment_Type"].isin(selected_pay))
     ]
 
-    # Executive KPIs
+    # Metrics
     kpi1, kpi2, kpi3, kpi4 = st.columns(4)
     kpi1.metric("Total Revenue", f"${filtered_df['Total_Revenue'].sum():,.2f}")
     kpi2.metric("Total Orders", f"{len(filtered_df):,}")
@@ -444,9 +358,8 @@ elif page == "Olist E-Commerce Analytics":
 
     st.markdown("---")
 
-    # Visualizations
+    # Charts layout
     col_c1, col_c2 = st.columns(2)
-
     with col_c1:
         monthly_rev = (
             filtered_df.groupby("YearMonth")["Total_Revenue"]
@@ -479,39 +392,3 @@ elif page == "Olist E-Commerce Analytics":
             template="plotly_dark",
         )
         st.plotly_chart(fig_pay, use_container_width=True)
-
-    col_c3, col_c4 = st.columns(2)
-
-    with col_c3:
-        cat_df = (
-            filtered_df.groupby("Product_Category")["Total_Revenue"]
-            .sum()
-            .reset_index()
-            .sort_values(by="Total_Revenue", ascending=True)
-        )
-        fig_cat = px.bar(
-            cat_df,
-            x="Total_Revenue",
-            y="Product_Category",
-            orientation="h",
-            title="Top Revenue by Product Category",
-            template="plotly_dark",
-            color="Total_Revenue",
-        )
-        st.plotly_chart(fig_cat, use_container_width=True)
-
-    with col_c4:
-        state_df = (
-            filtered_df.groupby("Customer_State")["Total_Revenue"]
-            .sum()
-            .reset_index()
-        )
-        fig_state = px.pie(
-            state_df,
-            names="Customer_State",
-            values="Total_Revenue",
-            title="Geographic Revenue Share by State",
-            hole=0.4,
-            template="plotly_dark",
-        )
-        st.plotly_chart(fig_state, use_container_width=True)
