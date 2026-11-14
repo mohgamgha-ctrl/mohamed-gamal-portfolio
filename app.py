@@ -160,62 +160,45 @@ page = st.sidebar.radio(
     "Select Section:",
     [
         "Profile",
-        "Healthcare Billing Analytics",
-        "AdventureWorks Sales Analytics",
+        "Olist E-Commerce Analytics",
     ],
 )
 st.sidebar.markdown("---")
 
 
 # ---------------------------------------------------------
-# Data Loaders
+# Data Loader for Olist E-Commerce
 # ---------------------------------------------------------
 @st.cache_data
-def get_healthcare_data():
+def get_olist_data():
     import numpy as np
 
     np.random.seed(42)
-    n = 300
-    specialties = ["Inpatient", "Outpatient", "Emergency", "Surgery", "ICU"]
-    insurance_providers = [
-        "Medicare",
-        "Medicaid",
-        "Private Insurance",
-        "Self-Pay",
+    n = 500
+    categories = [
+        "Health & Beauty",
+        "Computers & Accessories",
+        "Watches & Gifts",
+        "Bed Table & Bath",
+        "Sports & Leisure",
     ]
+    payment_types = ["credit_card", "boleto", "voucher", "debit_card"]
+    states = ["SP", "RJ", "MG", "RS", "PR"]
 
-    dates = pd.date_range(start="2025-01-01", periods=n, freq="D")
+    dates = pd.date_range(start="2023-01-01", periods=n, freq="D")
     data = {
-        "Admission_Date": np.random.choice(dates, n),
-        "Specialty": np.random.choice(specialties, n, p=[0.3, 0.3, 0.2, 0.1, 0.1]),
-        "Insurance_Provider": np.random.choice(insurance_providers, n),
-        "Billing_Amount": np.random.uniform(500, 15000, n).round(2),
-        "LOS_Days": np.random.randint(1, 15, n),
+        "Order_Date": np.random.choice(dates, n),
+        "Product_Category": np.random.choice(categories, n),
+        "Payment_Type": np.random.choice(payment_types, n, p=[0.7, 0.15, 0.1, 0.05]),
+        "Customer_State": np.random.choice(states, n, p=[0.4, 0.2, 0.2, 0.1, 0.1]),
+        "Price": np.random.uniform(30, 2500, n).round(2),
+        "Freight_Value": np.random.uniform(10, 150, n).round(2),
+        "Review_Score": np.random.choice([1, 2, 3, 4, 5], n, p=[0.1, 0.1, 0.15, 0.3, 0.35]),
     }
     df = pd.DataFrame(data)
-    df["YearMonth"] = df["Admission_Date"].dt.to_period("M").astype(str)
-    return df
-
-
-@st.cache_data
-def get_sales_data():
-    import numpy as np
-
-    np.random.seed(101)
-    n = 400
-    categories = ["Bikes", "Components", "Clothing", "Accessories"]
-    regions = ["North America", "Europe", "Pacific"]
-
-    dates = pd.date_range(start="2024-01-01", periods=n, freq="D")
-    data = {
-        "OrderDate": np.random.choice(dates, n),
-        "Category": np.random.choice(categories, n, p=[0.4, 0.2, 0.2, 0.2]),
-        "Region": np.random.choice(regions, n),
-        "SalesAmount": np.random.uniform(20, 3500, n).round(2),
-        "OrderQuantity": np.random.randint(1, 8, n),
-    }
-    df = pd.DataFrame(data)
-    df["YearMonth"] = df["OrderDate"].dt.to_period("M").astype(str)
+    df["Total_Revenue"] = df["Price"] + df["Freight_Value"]
+    df["Year"] = df["Order_Date"].dt.year.astype(str)
+    df["YearMonth"] = df["Order_Date"].dt.to_period("M").astype(str)
     return df
 
 
@@ -241,10 +224,9 @@ if page == "Profile":
                 break
 
         if img_file:
-            # تم تعديل السطر لضمان عرض الصورة بأعلى جودة ودون ضغط
             st.image(img_file, use_container_width=True)
         else:
-            st.warning("⚠️ يرجى رفع صورة باسم 'profile.jpg' أو 'Profile.jpg'")
+            st.warning("⚠️ يرجى رفع صورة باسم 'Profile.jpg'")
 
     with col_info:
         st.markdown(
@@ -291,8 +273,8 @@ if page == "Profile":
                 <div class="stat-label">Years of Experience</div>
             </div>
             <div class="stat-box">
-                <div class="stat-number">15+</div>
-                <div class="stat-label">Projects Completed</div>
+                <div class="stat-number">1+</div>
+                <div class="stat-label">Featured Projects</div>
             </div>
             <div class="stat-box">
                 <div class="stat-number">4+</div>
@@ -416,146 +398,120 @@ if page == "Profile":
             """)
 
 # ---------------------------------------------------------
-# PAGE 2: Healthcare Billing Analytics
+# PAGE 2: Olist E-Commerce Analytics
 # ---------------------------------------------------------
-elif page == "Healthcare Billing Analytics":
+elif page == "Olist E-Commerce Analytics":
     st.markdown(
-        '<div class="hero-title" style="font-size: 2.2rem !important;">🏥 Healthcare Billing Dashboard</div>',
+        '<div class="hero-title" style="font-size: 2.2rem !important;">🛒 Olist E-Commerce Executive Dashboard</div>',
         unsafe_allow_html=True,
     )
     st.write(
-        "Interactive analytics for medical billing, specialty distribution, and insurance claims."
+        "Comprehensive analytics platform evaluating Brazilian e-commerce performance, revenue trends, payment behavior, and customer satisfaction."
     )
 
-    df_health = get_healthcare_data()
+    df_olist = get_olist_data()
 
-    st.sidebar.markdown("### 🔍 Filters")
-    selected_spec = st.sidebar.multiselect(
-        "Specialty:",
-        df_health["Specialty"].unique(),
-        default=df_health["Specialty"].unique(),
+    # Sidebar Filters
+    st.sidebar.markdown("### 🔍 Dashboard Filters")
+    selected_year = st.sidebar.multiselect(
+        "Select Year:",
+        sorted(df_olist["Year"].unique()),
+        default=df_olist["Year"].unique(),
     )
-    selected_ins = st.sidebar.multiselect(
-        "Insurance Provider:",
-        df_health["Insurance_Provider"].unique(),
-        default=df_health["Insurance_Provider"].unique(),
-    )
-
-    filtered_health = df_health[
-        (df_health["Specialty"].isin(selected_spec))
-        & (df_health["Insurance_Provider"].isin(selected_ins))
-    ]
-
-    kpi1, kpi2, kpi3, kpi4 = st.columns(4)
-    kpi1.metric("Total Patients", f"{len(filtered_health):,}")
-    kpi2.metric(
-        "Total Billing Amount", f"${filtered_health['Billing_Amount'].sum():,.2f}"
-    )
-    kpi3.metric(
-        "Avg Length of Stay", f"{filtered_health['LOS_Days'].mean():.1f} Days"
-    )
-    kpi4.metric(
-        "Avg Bill Amount", f"${filtered_health['Billing_Amount'].mean():,.2f}"
-    )
-
-    st.markdown("---")
-
-    col_h1, col_h2 = st.columns(2)
-    with col_h1:
-        fig_spec = px.pie(
-            filtered_health,
-            names="Specialty",
-            values="Billing_Amount",
-            title="Billing Breakdown by Specialty",
-            hole=0.4,
-            template="plotly_dark",
-        )
-        st.plotly_chart(fig_spec, use_container_width=True)
-
-    with col_h2:
-        df_ins = (
-            filtered_health.groupby("Insurance_Provider")["Billing_Amount"]
-            .sum()
-            .reset_index()
-        )
-        fig_ins = px.bar(
-            df_ins,
-            x="Insurance_Provider",
-            y="Billing_Amount",
-            color="Insurance_Provider",
-            title="Claims by Insurance Provider",
-            template="plotly_dark",
-        )
-        st.plotly_chart(fig_ins, use_container_width=True)
-
-# ---------------------------------------------------------
-# PAGE 3: AdventureWorks Sales Analytics
-# ---------------------------------------------------------
-elif page == "AdventureWorks Sales Analytics":
-    st.markdown(
-        '<div class="hero-title" style="font-size: 2.2rem !important;">🛒 AdventureWorks Sales Dashboard</div>',
-        unsafe_allow_html=True,
-    )
-    st.write(
-        "Sales analytics dashboard for evaluating commercial performance, revenue trends, and regional distributions."
-    )
-
-    df_sales = get_sales_data()
-
-    st.sidebar.markdown("### 🔍 Filters")
     selected_cat = st.sidebar.multiselect(
         "Product Category:",
-        df_sales["Category"].unique(),
-        default=df_sales["Category"].unique(),
+        df_olist["Product_Category"].unique(),
+        default=df_olist["Product_Category"].unique(),
     )
-    selected_reg = st.sidebar.multiselect(
-        "Region:",
-        df_sales["Region"].unique(),
-        default=df_sales["Region"].unique(),
+    selected_pay = st.sidebar.multiselect(
+        "Payment Type:",
+        df_olist["Payment_Type"].unique(),
+        default=df_olist["Payment_Type"].unique(),
     )
 
-    filtered_sales = df_sales[
-        (df_sales["Category"].isin(selected_cat))
-        & (df_sales["Region"].isin(selected_reg))
+    filtered_df = df_olist[
+        (df_olist["Year"].isin(selected_year))
+        & (df_olist["Product_Category"].isin(selected_cat))
+        & (df_olist["Payment_Type"].isin(selected_pay))
     ]
 
-    s1, s2, s3 = st.columns(3)
-    s1.metric("Total Revenue", f"${filtered_sales['SalesAmount'].sum():,.2f}")
-    s2.metric("Total Orders", f"{len(filtered_sales):,}")
-    s3.metric("Avg Order Value", f"${filtered_sales['SalesAmount'].mean():,.2f}")
+    # Executive KPIs
+    kpi1, kpi2, kpi3, kpi4 = st.columns(4)
+    kpi1.metric("Total Revenue", f"${filtered_df['Total_Revenue'].sum():,.2f}")
+    kpi2.metric("Total Orders", f"{len(filtered_df):,}")
+    kpi3.metric("Avg Order Value", f"${filtered_df['Total_Revenue'].mean():,.2f}")
+    kpi4.metric("Avg Review Score", f"⭐ {filtered_df['Review_Score'].mean():.2f} / 5")
 
     st.markdown("---")
 
-    col_s1, col_s2 = st.columns(2)
-    with col_s1:
-        monthly_sales = (
-            filtered_sales.groupby("YearMonth")["SalesAmount"]
+    # Visualizations
+    col_c1, col_c2 = st.columns(2)
+
+    with col_c1:
+        monthly_rev = (
+            filtered_df.groupby("YearMonth")["Total_Revenue"]
             .sum()
             .reset_index()
             .sort_values("YearMonth")
         )
         fig_trend = px.line(
-            monthly_sales,
+            monthly_rev,
             x="YearMonth",
-            y="SalesAmount",
-            title="Monthly Sales Trend",
+            y="Total_Revenue",
+            title="Monthly Revenue Trajectory",
             markers=True,
             template="plotly_dark",
         )
         st.plotly_chart(fig_trend, use_container_width=True)
 
-    with col_s2:
-        df_reg = (
-            filtered_sales.groupby("Region")["SalesAmount"]
+    with col_c2:
+        pay_df = (
+            filtered_df.groupby("Payment_Type")["Total_Revenue"]
             .sum()
             .reset_index()
         )
-        fig_reg = px.bar(
-            df_reg,
-            x="Region",
-            y="SalesAmount",
-            color="Region",
-            title="Revenue by Geographic Region",
+        fig_pay = px.bar(
+            pay_df,
+            x="Payment_Type",
+            y="Total_Revenue",
+            color="Payment_Type",
+            title="Revenue Distribution by Payment Method",
             template="plotly_dark",
         )
-        st.plotly_chart(fig_reg, use_container_width=True)
+        st.plotly_chart(fig_pay, use_container_width=True)
+
+    col_c3, col_c4 = st.columns(2)
+
+    with col_c3:
+        cat_df = (
+            filtered_df.groupby("Product_Category")["Total_Revenue"]
+            .sum()
+            .reset_index()
+            .sort_values(by="Total_Revenue", ascending=True)
+        )
+        fig_cat = px.bar(
+            cat_df,
+            x="Total_Revenue",
+            y="Product_Category",
+            orientation="h",
+            title="Top Revenue by Product Category",
+            template="plotly_dark",
+            color="Total_Revenue",
+        )
+        st.plotly_chart(fig_cat, use_container_width=True)
+
+    with col_c4:
+        state_df = (
+            filtered_df.groupby("Customer_State")["Total_Revenue"]
+            .sum()
+            .reset_index()
+        )
+        fig_state = px.pie(
+            state_df,
+            names="Customer_State",
+            values="Total_Revenue",
+            title="Geographic Revenue Share by State",
+            hole=0.4,
+            template="plotly_dark",
+        )
+        st.plotly_chart(fig_state, use_container_width=True)
