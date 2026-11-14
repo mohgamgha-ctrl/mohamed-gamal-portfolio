@@ -1,9 +1,9 @@
 import os
 from PIL import Image
+import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from sqlalchemy import create_engine
 import streamlit as st
 
 # ---------------------------------------------------------
@@ -76,7 +76,7 @@ st.markdown(
         margin-bottom: 25px;
     }
     
-    /* Stats Bar (Bottom of Hero) */
+    /* Stats Bar */
     .stats-container {
         display: flex;
         justify-content: space-around;
@@ -157,7 +157,7 @@ st.markdown(
         display: block !important;
     }
 
-    /* Enlarged & Filled KPI Card Layout for Dashboard */
+    /* KPI Cards */
     .kpi-card {
         background: linear-gradient(145deg, #0D182E 0%, #0A1324 100%);
         border: 1px solid #1E355E;
@@ -247,7 +247,7 @@ FINOVATE_PALETTE = [
 ]
 
 # ---------------------------------------------------------
-# 3. Sidebar Navigation & Data Loader
+# 3. Sidebar Navigation & Standalone Data Provider
 # ---------------------------------------------------------
 st.sidebar.title("📌 Navigation")
 page = st.sidebar.radio(
@@ -260,69 +260,70 @@ page = st.sidebar.radio(
 st.sidebar.markdown("---")
 
 
-@st.cache_data(ttl=600)
+@st.cache_data
 def load_full_data():
-    server = r"DESKTOP-P4GO8F9\SQLEXPRESS"
-    database = "Olist_Ecommerce_DB"
-    driver = "ODBC Driver 17 for SQL Server"
-    
-    conn_str = f"mssql+pyodbc://@{server}/{database}?driver={driver}&trusted_connection=yes"
-    engine = create_engine(conn_str)
+    """محاكاة بيانات Olist E-Commerce الاحترافية للعمل بسلاسة على Streamlit Cloud"""
+    np.random.seed(42)
+    n = 1500
+    categories = [
+        "Health & Beauty",
+        "Computers & Accessories",
+        "Watches & Gifts",
+        "Bed Table & Bath",
+        "Sports & Leisure",
+        "Housewares",
+        "Cool Stuff",
+        "Auto",
+    ]
+    payment_types = ["credit_card", "boleto", "voucher", "debit_card"]
+    states = ["SP", "RJ", "MG", "RS", "PR", "SC", "BA"]
+    statuses = ["delivered", "shipped", "processing", "invoiced"]
 
-    cols_orders = pd.read_sql(
-        "SELECT TOP 1 * FROM stg_orders", engine
-    ).columns.tolist()
+    dates = pd.date_range(start="2023-01-01", periods=730, freq="D")
+    order_dates = np.random.choice(dates, n)
 
-    date_col = (
-        "o.order_purchase_timestamp"
-        if "order_purchase_timestamp" in cols_orders
-        else "GETDATE()"
-    )
-    status_col = (
-        "o.order_status" if "order_status" in cols_orders else "'delivered'"
-    )
-
-    query = f"""
-    SELECT 
-        f.order_id,
-        f.order_item_id,
-        f.price,
-        f.freight_value,
-        (f.price + f.freight_value) AS total_amount,
-        c.customer_unique_id,
-        c.customer_state,
-        c.customer_city,
-        ISNULL(p.product_category_name, 'Uncategorized') AS category,
-        s.seller_state,
-        CAST({date_col} AS DATETIME) AS order_date,
-        {status_col} AS order_status,
-        ISNULL(pay.payment_type, 'unknown') AS payment_type
-    FROM Fact_Order_Items f
-    LEFT JOIN Dim_Customers c ON f.customer_id = c.customer_id
-    LEFT JOIN Dim_Products p ON f.product_id = p.product_id
-    LEFT JOIN Dim_Sellers s ON f.seller_id = s.seller_id
-    LEFT JOIN stg_orders o ON f.order_id = o.order_id
-    LEFT JOIN (
-        SELECT order_id, payment_type, 
-               ROW_NUMBER() OVER(PARTITION BY order_id ORDER BY payment_value DESC) as rn
-        FROM stg_order_payments
-    ) pay ON f.order_id = pay.order_id AND pay.rn = 1
-    """
-    df = pd.read_sql(query, engine)
-    df["order_date"] = pd.to_datetime(df["order_date"], errors="coerce")
+    data = {
+        "order_id": [f"ord_{i:04d}" for i in range(n)],
+        "order_item_id": np.random.choice([1, 2, 3], n, p=[0.8, 0.15, 0.05]),
+        "price": np.random.uniform(40, 3000, n).round(2),
+        "freight_value": np.random.uniform(10, 180, n).round(2),
+        "customer_unique_id": [
+            f"cust_{np.random.randint(1, 400)}" for _ in range(n)
+        ],
+        "customer_state": np.random.choice(states, n, p=[0.4, 0.2, 0.15, 0.1, 0.05, 0.05, 0.05]),
+        "customer_city": "City_Sample",
+        "category": np.random.choice(categories, n),
+        "seller_state": np.random.choice(states, n),
+        "order_date": order_dates,
+        "order_status": np.random.choice(statuses, n, p=[0.9, 0.04, 0.03, 0.03]),
+        "payment_type": np.random.choice(payment_types, n, p=[0.74, 0.15, 0.07, 0.04]),
+    }
+    df = pd.DataFrame(data)
+    df["total_amount"] = df["price"] + df["freight_value"]
+    df["order_date"] = pd.to_datetime(df["order_date"])
     df["Year_Month"] = df["order_date"].dt.to_period("M").astype(str)
     df["Year"] = df["order_date"].dt.year.astype(str)
     df["Day_of_Week"] = df["order_date"].dt.day_name()
-    df["Hour"] = df["order_date"].dt.hour
+    df["Hour"] = np.random.randint(0, 24, n)
 
-    df_pay = pd.read_sql(
-        "SELECT payment_type, COUNT(*) AS cnt, SUM(CAST(payment_value AS FLOAT)) AS val FROM stg_order_payments GROUP BY payment_type",
-        engine,
+    # جداول مساعدة للمدفوعات والمراجعات
+    df_pay = (
+        df.groupby("payment_type")
+        .agg(cnt=("order_id", "count"), val=("total_amount", "sum"))
+        .reset_index()
     )
-    df_rev = pd.read_sql(
-        "SELECT review_score, COUNT(*) AS cnt FROM stg_order_reviews GROUP BY review_score ORDER BY review_score",
-        engine,
-    )
+    
+    rev_data = {
+        "review_score": [1, 2, 3, 4, 5],
+        "cnt": [
+            int(n * 0.08),
+            int(n * 0.06),
+            int(n * 0.12),
+            int(n * 0.32),
+            int(n * 0.42),
+        ],
+    }
+    df_rev = pd.DataFrame(rev_data)
 
     return df, df_pay, df_rev
 
@@ -386,7 +387,7 @@ if page == "Profile":
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # Stats Bar Section
+    # Stats Bar
     st.markdown(
         """
         <div class="stats-container">
@@ -411,7 +412,7 @@ if page == "Profile":
         unsafe_allow_html=True,
     )
 
-    # Technical Skills Section
+    # Technical Skills
     st.markdown(
         '<div class="section-header">🛠️ Technical Skills & Core Competencies</div>',
         unsafe_allow_html=True,
@@ -522,7 +523,7 @@ if page == "Profile":
 elif page == "Olist E-Commerce Analytics":
     df_raw, df_payments, df_reviews = load_full_data()
 
-    # Sidebar Filters specific for Olist Dashboard
+    # Sidebar Filters
     st.sidebar.markdown("### 🔍 Dashboard Filters")
 
     state_list = ["All States"] + sorted(
@@ -556,18 +557,12 @@ elif page == "Olist E-Commerce Analytics":
     if selected_year != "All Years":
         df = df[df["Year"] == selected_year]
 
-    # Calculate MoM Deltas
     def get_mom_delta(monthly_series):
         s = monthly_series.sort_index()
-        if len(s) >= 3 and s.iloc[-1] < (s.iloc[-2] * 0.2):
-            s = s.iloc[:-1]
         if len(s) >= 2 and s.iloc[-2] > 0:
             pct = ((s.iloc[-1] - s.iloc[-2]) / s.iloc[-2]) * 100
             if pct >= 0:
-                return (
-                    f"<span style='color:#00E5B0;'>▲ +{pct:.1f}% mo</span>",
-                    True,
-                )
+                return f"<span style='color:#00E5B0;'>▲ +{pct:.1f}% mo</span>", True
             else:
                 return f"<span style='color:#F43F5E;'>▼ {pct:.1f}% mo</span>", False
         return "<span style='color:#8A99B5;'>— 0.0% mo</span>", True
@@ -622,19 +617,19 @@ elif page == "Olist E-Commerce Analytics":
             unsafe_allow_html=True,
         )
 
-    # Row 0: ALL 7 Custom KPI Cards Side-by-Side
+    # Row 0: 7 KPI Cards
     c1, c2, c3, c4, c5, c6, c7 = st.columns(7)
     with c1:
         render_kpi(
             "Total Revenue",
-            f"${total_revenue / 1e6:.2f}M",
+            f"${total_revenue / 1e3:.1f}K",
             get_mom_delta(m_rev),
             "💵",
         )
     with c2:
         render_kpi(
             "Net Sales",
-            f"${total_product_sales / 1e6:.2f}M",
+            f"${total_product_sales / 1e3:.1f}K",
             get_mom_delta(m_sales),
             "📦",
         )
@@ -653,7 +648,7 @@ elif page == "Olist E-Commerce Analytics":
     with c6:
         render_kpi(
             "Total Freight",
-            f"${total_freight / 1e6:.2f}M",
+            f"${total_freight / 1e3:.1f}K",
             get_mom_delta(m_freight),
             "🚚",
         )
@@ -723,4 +718,255 @@ elif page == "Olist E-Commerce Analytics":
             fillcolor="rgba(0, 229, 176, 0.18)",
         )
         st.plotly_chart(
-            style_square_
+            style_square_fig(fig1, "1. Monthly Revenue Trend ($)"),
+            use_container_width=True,
+        )
+
+    with r1_c2:
+        comp_df = pd.DataFrame(
+            {
+                "Component": ["Product Sales", "Freight Cost"],
+                "Amount": [total_product_sales, total_freight],
+            }
+        )
+        fig2 = px.pie(
+            comp_df,
+            names="Component",
+            values="Amount",
+            hole=0.58,
+            color_discrete_sequence=[MINT_GREEN, VIOLET_PURPLE],
+        )
+        fig2.update_traces(
+            textinfo="percent+label",
+            textfont=dict(size=15, color="#FFFFFF", weight="bold"),
+        )
+        fig2.add_annotation(
+            text=f"Freight<br>{freight_pct:.1f}%",
+            x=0.5,
+            y=0.5,
+            font_size=14,
+            showarrow=False,
+            font_color="#FFFFFF",
+        )
+        st.plotly_chart(
+            style_square_fig(
+                fig2,
+                "2. Revenue vs. Freight Split",
+                margin=dict(l=20, r=20, t=65, b=20),
+            ),
+            use_container_width=True,
+        )
+
+    with r1_c3:
+        top_states = (
+            df.groupby("customer_state")["total_amount"]
+            .sum()
+            .nlargest(7)
+            .reset_index()
+        )
+        fig3 = px.bar(
+            top_states,
+            x="total_amount",
+            y="customer_state",
+            orientation="h",
+            text="total_amount",
+            color="total_amount",
+            color_continuous_scale=[VIOLET_PURPLE, CYAN_BLUE, MINT_GREEN],
+        )
+        fig3.update_traces(
+            texttemplate="%{text:,.0f}$",
+            textposition="outside",
+            cliponaxis=False,
+            textfont=dict(size=14, color="#FFFFFF", weight="bold"),
+        )
+        fig3.update_yaxes(categoryorder="total ascending")
+        st.plotly_chart(
+            style_square_fig(
+                fig3,
+                "3. Top 7 States by Revenue",
+                margin=dict(l=20, r=85, t=55, b=20),
+            ),
+            use_container_width=True,
+        )
+
+    # ROW 2: Top Categories | Payment Methods | Reviews
+    r2_c1, r2_c2, r2_c3 = st.columns(3)
+
+    with r2_c1:
+        top_cats = (
+            df.groupby("category")["price"].sum().nlargest(8).reset_index()
+        )
+        top_cats["short_cat"] = top_cats["category"].str.slice(0, 15)
+        fig4 = px.treemap(
+            top_cats,
+            path=["short_cat"],
+            values="price",
+            color="price",
+            color_continuous_scale=[
+                VIOLET_PURPLE,
+                ROYAL_BLUE,
+                CYAN_BLUE,
+                MINT_GREEN,
+            ],
+        )
+        fig4.update_traces(
+            textinfo="label+value",
+            texttemplate="<b>%{label}</b><br>$%{value:,.0f}",
+            textfont=dict(size=14, color="#FFFFFF"),
+        )
+        st.plotly_chart(
+            style_square_fig(
+                fig4,
+                "4. Top Categories Share (Treemap)",
+                margin=dict(l=10, r=10, t=55, b=10),
+            ),
+            use_container_width=True,
+        )
+
+    with r2_c2:
+        df_pay_sorted = df_payments[df_payments["val"] > 0].sort_values(
+            "val", ascending=True
+        )
+        fig5 = px.bar(
+            df_pay_sorted,
+            x="val",
+            y="payment_type",
+            orientation="h",
+            text="val",
+            color="payment_type",
+            color_discrete_sequence=FINOVATE_PALETTE,
+        )
+        fig5.update_traces(
+            texttemplate="%{text:,.0f}$",
+            textposition="outside",
+            cliponaxis=False,
+            textfont=dict(size=14, color="#FFFFFF", weight="bold"),
+        )
+        st.plotly_chart(
+            style_square_fig(
+                fig5,
+                "5. Payment Methods Allocation",
+                margin=dict(l=20, r=85, t=55, b=20),
+            ),
+            use_container_width=True,
+        )
+
+    with r2_c3:
+        fig6 = px.bar(
+            df_reviews,
+            x="review_score",
+            y="cnt",
+            text="cnt",
+            color="review_score",
+            color_continuous_scale=[CORAL_RED, VIOLET_PURPLE, MINT_GREEN],
+        )
+        fig6.update_traces(
+            texttemplate="%{text:,}",
+            textposition="outside",
+            cliponaxis=False,
+            textfont=dict(size=14, color="#FFFFFF", weight="bold"),
+        )
+        fig6.update_xaxes(title="Stars (1-5)")
+        st.plotly_chart(
+            style_square_fig(
+                fig6,
+                "6. Customer Review Scores",
+                margin=dict(l=20, r=25, t=55, b=20),
+            ),
+            use_container_width=True,
+        )
+
+    # ROW 3: Orders by Day | Peak Hours | Fulfillment Funnel
+    r3_c1, r3_c2, r3_c3 = st.columns(3)
+
+    with r3_c1:
+        days_order = [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+        ]
+        dow = (
+            df.groupby("Day_of_Week")["order_id"]
+            .nunique()
+            .reindex(days_order)
+            .reset_index()
+        )
+        dow["Day_Short"] = dow["Day_of_Week"].str.slice(0, 3)
+        fig7 = px.bar(
+            dow,
+            x="Day_Short",
+            y="order_id",
+            text="order_id",
+            color="order_id",
+            color_continuous_scale=[VIOLET_PURPLE, CYAN_BLUE],
+        )
+        fig7.update_traces(
+            texttemplate="%{text:,}",
+            textposition="outside",
+            cliponaxis=False,
+            textfont=dict(size=14, color="#FFFFFF", weight="bold"),
+        )
+        st.plotly_chart(
+            style_square_fig(
+                fig7,
+                "7. Orders Volume by Day",
+                margin=dict(l=20, r=25, t=55, b=20),
+            ),
+            use_container_width=True,
+        )
+
+    with r3_c2:
+        hourly = df.groupby("Hour")["order_id"].nunique().reset_index()
+        fig8 = px.area(
+            hourly,
+            x="Hour",
+            y="order_id",
+            color_discrete_sequence=[VIOLET_PURPLE],
+        )
+        fig8.update_traces(
+            line=dict(color=VIOLET_PURPLE, width=3, shape="spline"),
+            fillcolor="rgba(139, 92, 246, 0.22)",
+        )
+        fig8.update_xaxes(title="Hour (0-23)")
+        st.plotly_chart(
+            style_square_fig(fig8, "8. Peak Shopping Hours Flow"),
+            use_container_width=True,
+        )
+
+    with r3_c3:
+        status_df = (
+            df.groupby("order_status")["order_id"]
+            .nunique()
+            .nlargest(5)
+            .reset_index()
+            .sort_values("order_id", ascending=False)
+        )
+        fig9 = go.Figure(
+            go.Funnel(
+                y=status_df["order_status"],
+                x=status_df["order_id"],
+                textinfo="value+percent initial",
+                textfont=dict(size=14, color="#FFFFFF", weight="bold"),
+                marker=dict(
+                    color=[
+                        MINT_GREEN,
+                        CYAN_BLUE,
+                        ROYAL_BLUE,
+                        VIOLET_PURPLE,
+                        CORAL_RED,
+                    ]
+                ),
+            )
+        )
+        st.plotly_chart(
+            style_square_fig(
+                fig9,
+                "9. Order Fulfillment Funnel (Top 5)",
+                margin=dict(l=20, r=25, t=55, b=20),
+            ),
+            use_container_width=True,
+        )
