@@ -18,19 +18,22 @@ st.set_page_config(
 # ---------------------------------------------------------
 # 2. Session State for Project Details Toggle
 # ---------------------------------------------------------
-if "open_olist" not in st.session_state:
-    st.session_state.open_olist = False
+if "open_pepsi" not in st.session_state:
+    st.session_state.open_pepsi = False
 if "open_healthcare" not in st.session_state:
     st.session_state.open_healthcare = False
+if "open_olist" not in st.session_state:
+    st.session_state.open_olist = False
 
 # ---------------------------------------------------------
-# 3. Custom CSS (Finovate Theme & Clean Spacing)
+# 3. Custom CSS (Light, Calm & Cohesive Palette)
 # ---------------------------------------------------------
 st.markdown(
     """
 <style>
     .stApp, .main {
-        background-color: #060B19 !important;
+        background-color: #F8FAFC !important;
+        color: #0F172A !important;
     }
 
     /* Hide Sidebar Completely */
@@ -41,55 +44,54 @@ st.markdown(
 
     .block-container {
         padding-top: 1.5rem !important;
-        padding-bottom: 1.5rem !important;
-        padding-left: 1.5rem !important;
-        padding-right: 1.5rem !important;
+        padding-bottom: 2rem !important;
+        padding-left: 1.8rem !important;
+        padding-right: 1.8rem !important;
         max-width: 100% !important;
     }
 
     /* Hero Section Container */
     .hero-container {
-        background: linear-gradient(145deg, #0D182E 0%, #0A1324 100%);
-        border: 1px solid #1E355E;
+        background: linear-gradient(135deg, #FFFFFF 0%, #F1F5F9 100%);
+        border: 1px solid #E2E8F0;
         border-radius: 20px;
         padding: 30px 40px;
-        box-shadow: 0 0 35px rgba(56, 189, 248, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
         margin-top: 0px !important;
-        margin-bottom: 25px;
+        margin-bottom: 22px;
     }
 
     .hero-title {
-        font-size: 2.8rem !important;
+        font-size: 2.7rem !important;
         font-weight: 800 !important;
-        color: #FFFFFF !important;
-        margin-bottom: 5px;
-        text-shadow: 0 2px 12px rgba(56, 189, 248, 0.4);
+        color: #0F172A !important;
+        margin-bottom: 6px;
     }
 
     .hero-subtitle {
-        font-size: 1.4rem !important;
+        font-size: 1.35rem !important;
         font-weight: 600 !important;
-        color: #38BDF8 !important;
-        margin-bottom: 15px;
+        color: #0D9488 !important;
+        margin-bottom: 14px;
     }
 
     .hero-desc {
         font-size: 1.05rem !important;
-        color: #94A3B8 !important;
-        line-height: 1.6;
-        margin-bottom: 25px;
+        color: #475569 !important;
+        line-height: 1.65;
+        margin-bottom: 22px;
     }
 
     /* Stats Bar */
     .stats-container {
         display: flex;
         justify-content: space-around;
-        background: rgba(13, 24, 46, 0.7);
-        border: 1px solid #1E355E;
-        border-radius: 14px;
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 16px;
         padding: 20px;
-        margin-top: 25px;
-        box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
+        margin-top: 18px;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
     }
     .stat-box {
         text-align: center;
@@ -97,70 +99,71 @@ st.markdown(
     .stat-number {
         font-size: 1.8rem;
         font-weight: 800;
-        color: #00E5B0;
+        color: #0D9488;
     }
     .stat-label {
-        font-size: 0.9rem;
-        color: #94A3B8;
-        font-weight: 500;
+        font-size: 0.92rem;
+        color: #64748B;
+        font-weight: 600;
     }
 
     /* Section Headers */
     .section-header {
-        font-size: 1.6rem;
+        font-size: 1.55rem;
         font-weight: 700;
-        color: #38BDF8 !important;
-        border-bottom: 2px solid #1E355E;
+        color: #0F172A !important;
+        border-bottom: 2px solid #CBD5E1;
         padding-bottom: 8px;
-        margin-top: 35px;
-        margin-bottom: 20px;
+        margin-top: 34px;
+        margin-bottom: 18px;
     }
 
     /* Project Summary Card (Compact View on Scroll) */
     .project-summary-card {
-        background: linear-gradient(145deg, #0D182E 0%, #0A1324 100%);
-        border: 1px solid #1E355E;
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-left: 5px solid #0D9488;
         border-radius: 16px;
         padding: 22px 26px;
         margin-bottom: 10px;
-        box-shadow: 0 0 25px rgba(56, 189, 248, 0.14);
-        transition: all 0.3s ease;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+        transition: all 0.25s ease;
     }
     .project-summary-card:hover {
-        border-color: #38BDF8;
-        box-shadow: 0 0 32px rgba(56, 189, 248, 0.28);
+        border-color: #99F6E4;
+        box-shadow: 0 8px 24px rgba(13, 148, 136, 0.10);
     }
     .project-card-title {
-        font-size: 1.55rem;
+        font-size: 1.5rem;
         font-weight: 800;
-        color: #FFFFFF;
+        color: #0F172A;
         margin-bottom: 6px;
     }
     .project-card-brief {
-        color: #CBD5E1;
+        color: #475569;
         font-size: 0.98rem;
-        line-height: 1.55;
+        line-height: 1.6;
         margin-bottom: 12px;
     }
     .project-highlights {
         display: flex;
         flex-wrap: wrap;
-        gap: 14px;
+        gap: 12px;
         margin-top: 10px;
-        margin-bottom: 6px;
-        color: #00E5B0;
+        margin-bottom: 8px;
+        color: #0F766E;
         font-size: 0.88rem;
-        font-weight: 600;
+        font-weight: 700;
     }
 
     .tool-badge {
         display: inline-block;
-        background: rgba(56, 189, 248, 0.12);
-        border: 1px solid rgba(56, 189, 248, 0.35);
-        color: #38BDF8;
+        background: #F0FDFA;
+        border: 1px solid #99F6E4;
+        color: #0F766E;
         font-size: 0.8rem;
         font-weight: 600;
-        padding: 4px 10px;
+        padding: 4px 11px;
         border-radius: 999px;
         margin-right: 6px;
         margin-top: 4px;
@@ -168,18 +171,19 @@ st.markdown(
 
     /* Expanded Details Container */
     .project-details-box {
-        background: rgba(9, 17, 36, 0.85);
-        border: 1px solid #264375;
+        background: #FFFFFF;
+        border: 1px solid #CBD5E1;
         border-radius: 16px;
-        padding: 20px 22px;
+        padding: 22px 24px;
         margin-top: 10px;
         margin-bottom: 24px;
+        box-shadow: 0 6px 20px rgba(15, 23, 42, 0.04);
     }
 
     /* Filter Bar */
     .filter-bar {
-        background: rgba(13, 24, 46, 0.75);
-        border: 1px solid #1E355E;
+        background: #F8FAFC;
+        border: 1px solid #E2E8F0;
         border-radius: 14px;
         padding: 14px 18px 6px 18px;
         margin-bottom: 14px;
@@ -187,23 +191,23 @@ st.markdown(
 
     /* Skill Cards */
     .skill-card {
-        background: linear-gradient(145deg, #0D182E 0%, #0A1324 100%) !important;
-        color: #F8FAFC !important;
+        background: #FFFFFF !important;
+        color: #0F172A !important;
         padding: 20px;
         border-radius: 14px;
-        border: 1px solid #1E355E;
-        box-shadow: 0 0 20px rgba(56, 189, 248, 0.12);
+        border: 1px solid #E2E8F0;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
         margin-bottom: 15px;
         height: 100%;
-        transition: all 0.3s ease;
+        transition: all 0.25s ease;
     }
     .skill-card:hover {
-        border-color: #38BDF8;
-        box-shadow: 0 0 30px rgba(56, 189, 248, 0.35);
-        transform: translateY(-3px);
+        border-color: #5EEAD4;
+        box-shadow: 0 8px 22px rgba(13, 148, 136, 0.09);
+        transform: translateY(-2px);
     }
     .skill-card h4 {
-        color: #38BDF8 !important;
+        color: #0F766E !important;
         margin-bottom: 12px;
         font-size: 1.15rem;
     }
@@ -212,7 +216,7 @@ st.markdown(
         padding-left: 18px;
     }
     .skill-card ul li {
-        color: #CBD5E1 !important;
+        color: #334155 !important;
         font-size: 0.95rem;
         margin-bottom: 6px;
     }
@@ -220,32 +224,44 @@ st.markdown(
     /* Profile Image Style */
     [data-testid="stImage"] img {
         border-radius: 50% !important;
-        width: 230px !important;
-        height: 230px !important;
+        width: 220px !important;
+        height: 220px !important;
         object-fit: cover !important;
         background-color: transparent !important;
-        border: 4px solid #38BDF8 !important;
-        box-shadow: 0 0 30px rgba(56, 189, 248, 0.5) !important;
+        border: 4px solid #0D9488 !important;
+        box-shadow: 0 8px 24px rgba(13, 148, 136, 0.18) !important;
+        margin: 0 auto !important;
+        display: block !important;
+    }
+
+    /* Compact & Centered Video Player */
+    [data-testid="stVideo"] video {
+        max-width: 720px !important;
+        max-height: 400px !important;
+        width: 100% !important;
+        border-radius: 14px !important;
+        border: 1px solid #CBD5E1 !important;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.10) !important;
         margin: 0 auto !important;
         display: block !important;
     }
 
     /* KPI Cards */
     .kpi-card {
-        background: linear-gradient(145deg, #0D182E 0%, #0A1324 100%);
-        border: 1px solid #1E355E;
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
         border-radius: 12px;
         padding: 10px 14px;
-        box-shadow: 0 0 25px rgba(56, 189, 248, 0.22), inset 0 1px 1px rgba(255, 255, 255, 0.12);
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
         display: flex;
         align-items: center;
         justify-content: space-between;
         height: 85px;
-        transition: all 0.3s ease;
+        transition: all 0.25s ease;
     }
     .kpi-card:hover {
-        border-color: #38BDF8;
-        box-shadow: 0 0 35px rgba(56, 189, 248, 0.5);
+        border-color: #5EEAD4;
+        box-shadow: 0 6px 18px rgba(13, 148, 136, 0.10);
         transform: translateY(-2px);
     }
     .kpi-content {
@@ -254,19 +270,18 @@ st.markdown(
         justify-content: center;
     }
     .kpi-title {
-        color: #8A99B5 !important;
+        color: #64748B !important;
         font-size: 12px !important;
         font-weight: 600;
         margin-bottom: 1px;
         white-space: nowrap;
-        letter-spacing: 0.3px;
+        letter-spacing: 0.2px;
     }
     .kpi-value {
-        color: #FFFFFF !important;
+        color: #0F172A !important;
         font-size: 19px !important;
         font-weight: 800;
         line-height: 1.2;
-        letter-spacing: 0.2px;
     }
     .kpi-delta {
         font-size: 11px !important;
@@ -277,40 +292,40 @@ st.markdown(
         gap: 3px;
     }
     .kpi-icon {
-        font-size: 32px;
+        font-size: 30px;
         display: flex;
         align-items: center;
         justify-content: center;
-        filter: drop-shadow(0 0 10px rgba(56,189,248,0.7));
     }
 
-    /* Bento Box Styling for Plotly Charts */
+    /* Card Styling for Plotly Charts */
     div[data-testid="stPlotlyChart"] {
-        background: linear-gradient(145deg, #0D182E 0%, #0A1324 100%) !important;
-        border: 1px solid #1E355E;
+        background: #FFFFFF !important;
+        border: 1px solid #E2E8F0;
         border-radius: 12px;
         padding: 6px;
-        box-shadow: 0 0 25px rgba(56, 189, 248, 0.18), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
         margin-bottom: 6px;
-        transition: all 0.3s ease;
+        transition: all 0.25s ease;
     }
     div[data-testid="stPlotlyChart"]:hover {
-        border-color: #38BDF8;
-        box-shadow: 0 0 40px rgba(56, 189, 248, 0.4);
+        border-color: #99F6E4;
+        box-shadow: 0 6px 20px rgba(13, 148, 136, 0.09);
     }
 
     /* Toggle Button Styling */
     div.stButton > button {
-        background: linear-gradient(90deg, #0E7490 0%, #2563EB 100%) !important;
+        background: linear-gradient(90deg, #0D9488 0%, #2563EB 100%) !important;
         color: #FFFFFF !important;
-        border: 1px solid #38BDF8 !important;
+        border: none !important;
         border-radius: 10px !important;
         font-weight: 700 !important;
-        padding: 0.45rem 1.1rem !important;
-        transition: all 0.25s ease !important;
+        padding: 0.45rem 1.15rem !important;
+        transition: all 0.2s ease !important;
     }
     div.stButton > button:hover {
-        box-shadow: 0 0 18px rgba(56, 189, 248, 0.55) !important;
+        opacity: 0.94 !important;
+        box-shadow: 0 6px 16px rgba(13, 148, 136, 0.25) !important;
         transform: translateY(-1px) !important;
     }
 </style>
@@ -318,21 +333,36 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Color Palette
-MINT_GREEN = "#00E5B0"
-CYAN_BLUE = "#38BDF8"
-ROYAL_BLUE = "#3B82F6"
-VIOLET_PURPLE = "#8B5CF6"
-CORAL_RED = "#F43F5E"
-FINOVATE_PALETTE = [
-    "#00E5B0",
-    "#38BDF8",
-    "#3B82F6",
-    "#8B5CF6",
+# Calm & Cohesive Light-Theme Palette
+TEAL_PRIMARY = "#0D9488"
+BLUE_ACCENT = "#2563EB"
+SKY_SOFT = "#0284C7"
+INDIGO_SOFT = "#4F46E5"
+ROSE_SOFT = "#E11D48"
+AMBER_SOFT = "#D97706"
+LIGHT_PALETTE = [
+    "#0D9488",
+    "#2563EB",
+    "#0284C7",
+    "#4F46E5",
+    "#14B8A6",
     "#6366F1",
-    "#2DD4BF",
-    "#A855F7",
+    "#D97706",
 ]
+
+
+def render_centered_video(video_path: str, missing_message: str):
+    st.markdown(
+        '<div style="color:#0F766E; font-weight:700; font-size:1.05rem; margin-bottom:8px;">🎬 عرض توضيحي للداشبورد (Dashboard Walkthrough)</div>',
+        unsafe_allow_html=True,
+    )
+    if os.path.exists(video_path):
+        _, mid_col, _ = st.columns([1, 2.2, 1])
+        with mid_col:
+            st.video(video_path)
+    else:
+        st.info(missing_message)
+
 
 # ---------------------------------------------------------
 # 4. Data Providers
@@ -466,6 +496,44 @@ def load_healthcare_summary_data():
     return df_cond, df_hosp, df_days, df_age
 
 
+@st.cache_data
+def load_pepsi_summary_data():
+    years = ["2022", "2023", "2024", "2025", "2026"]
+    rev_m = [0.78, 0.94, 1.08, 1.22, 1.15]
+    profit_m = [0.26, 0.32, 0.37, 0.41, 0.39]
+    discount_k = [44.2, 52.8, 60.5, 68.1, 63.44]
+    df_yr = pd.DataFrame(
+        {
+            "Year": years,
+            "Revenue_M": rev_m,
+            "Net_Profit_M": profit_m,
+            "Discount_K": discount_k,
+        }
+    )
+
+    govs = [
+        "Cairo",
+        "Giza",
+        "Alexandria",
+        "Dakahlia",
+        "Sharqia",
+        "Gharbia",
+    ]
+    gov_rev_m = [1.34, 1.09, 0.88, 0.61, 0.56, 0.49]
+    df_gov = pd.DataFrame({"Governorate": govs, "Revenue_M": gov_rev_m})
+
+    categories = [
+        "Carbonated Cola",
+        "Zero Sugar",
+        "Flavored Sodas",
+        "Energy & Juices",
+    ]
+    cat_units_k = [138.0, 74.0, 62.0, 43.0]
+    df_cat = pd.DataFrame({"Category": categories, "Units_K": cat_units_k})
+
+    return df_yr, df_gov, df_cat
+
+
 # ---------------------------------------------------------
 # SECTION 1: Profile
 # ---------------------------------------------------------
@@ -491,7 +559,7 @@ with col_img:
 
 with col_info:
     st.markdown(
-        '<div style="color: #38BDF8; font-weight: 600; font-size: 1.1rem; margin-bottom: 5px;">Hello, I\'m</div>',
+        '<div style="color: #0D9488; font-weight: 700; font-size: 1.05rem; margin-bottom: 5px;">Hello, I\'m</div>',
         unsafe_allow_html=True,
     )
     st.markdown(
@@ -499,7 +567,7 @@ with col_info:
         unsafe_allow_html=True,
     )
     st.markdown(
-        '<div class="hero-subtitle">And I\'m a Healthcare & Business Data Analyst</div>',
+        '<div class="hero-subtitle">Healthcare & Business Data Analyst</div>',
         unsafe_allow_html=True,
     )
     st.markdown(
@@ -533,7 +601,7 @@ st.markdown(
             <div class="stat-label">Years of Experience</div>
         </div>
         <div class="stat-box">
-            <div class="stat-number">2+</div>
+            <div class="stat-number">3+</div>
             <div class="stat-label">Featured Projects</div>
         </div>
         <div class="stat-box">
@@ -676,33 +744,33 @@ def style_square_fig(fig, title, margin=dict(l=20, r=30, t=55, b=20)):
         autosize=True,
         title=dict(
             text=title,
-            font=dict(size=17, color="#FFFFFF", family="sans-serif"),
+            font=dict(size=16, color="#0F172A", family="sans-serif"),
             x=0.03,
             y=0.92,
         ),
-        template="plotly_dark",
+        template="plotly_white",
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)",
-        height=215,
+        height=220,
         margin=margin,
-        font=dict(size=14, color="#E2E8F0"),
+        font=dict(size=13, color="#334155"),
         showlegend=False,
         coloraxis_showscale=False,
         hoverlabel=dict(
-            bgcolor="#0A1324",
-            bordercolor="#38BDF8",
-            font=dict(size=16, color="#FFFFFF", family="sans-serif"),
+            bgcolor="#FFFFFF",
+            bordercolor="#0D9488",
+            font=dict(size=14, color="#0F172A", family="sans-serif"),
         ),
     )
     fig.update_xaxes(
         showgrid=False,
-        linecolor="#1E355E",
-        tickfont=dict(size=13, color="#CBD5E1"),
+        linecolor="#CBD5E1",
+        tickfont=dict(size=12, color="#475569"),
     )
     fig.update_yaxes(
-        gridcolor="#162645",
-        zerolinecolor="#162645",
-        tickfont=dict(size=13, color="#CBD5E1"),
+        gridcolor="#E2E8F0",
+        zerolinecolor="#CBD5E1",
+        tickfont=dict(size=12, color="#475569"),
     )
     return fig
 
@@ -716,8 +784,265 @@ st.markdown(
 )
 
 # =========================================================
-# PROJECT 1: Healthcare Analytics Dashboard (Brief + Toggle)
+# PROJECT 1: Pepsi Egypt Sales Analytics (2022 – 2026)
 # =========================================================
+st.markdown(
+    """
+    <div class="project-summary-card">
+        <div class="project-card-title">🥤 Pepsi Egypt Sales Analytics (2022 – 2026) | End-to-End BI Project</div>
+        <div class="project-card-brief">
+            دورة تحليل متكاملة لتحليل مبيعات Pepsi في مصر خلال 5 سنوات (بيانات تجريبية Synthetic Data تحاكي مشاكل البيانات الحقيقية) بدءاً من تنظيف الداتا بـ Python وبناء Star Schema ومراجعتها بـ SQL وصولاً لداشبورد Power BI بصفحة واحدة.
+        </div>
+        <div class="project-highlights">
+            <span>💰 5.17M EGP Revenue</span>
+            <span>•</span>
+            <span>📈 1.75M EGP Net Profit</span>
+            <span>•</span>
+            <span>📦 317K Units</span>
+            <span>•</span>
+            <span>🏷️ 289.04K EGP Discounts</span>
+            <span>•</span>
+            <span>⭐ 4.21 Avg Rating</span>
+        </div>
+        <div>
+            <span class="tool-badge">Python (Pandas)</span>
+            <span class="tool-badge">SQL (Star Schema)</span>
+            <span class="tool-badge">Power BI & DAX</span>
+            <span class="tool-badge">2022 – 2026</span>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+pepsi_btn_label = (
+    "🔽 إخفاء تفاصيل مشروع Pepsi Egypt Sales"
+    if st.session_state.open_pepsi
+    else "🔍 اضغط لعرض التفاصيل والفيديو التوضيحي والداشبورد"
+)
+if st.button(pepsi_btn_label, key="btn_toggle_pepsi"):
+    st.session_state.open_pepsi = not st.session_state.open_pepsi
+    st.rerun()
+
+if st.session_state.open_pepsi:
+    st.markdown('<div class="project-details-box">', unsafe_allow_html=True)
+
+    st.markdown(
+        """
+        <div style="color: #334155; font-size: 0.96rem; line-height: 1.75; margin-bottom: 16px;">
+            <h4 style="color: #0F766E; margin-bottom: 8px;">🔎 مراحل العمل والمنهجية</h4>
+            <ul>
+                <li><b>تنظيف وتجهيز الداتا بـ Python (Pandas):</b> توحيد أسماء المدن وأحجام العبوات والفئات، وضبط التواريخ وحساب الأعمدة المالية (<b>Revenue, Cost, Discount, Net Profit</b>) بالجنيه المصري على بيانات تجريبية (<b>Synthetic Data</b>).</li>
+                <li><b>تنظيم البيانات والاستعلام بـ SQL:</b> تقسيم الداتا بنظام <b>Star Schema</b> (جدول Fact للمبيعات وجداول Dimensions للمدن والتواريخ والمنتجات والأحجام) ومراجعة المجاميع والأرقام قبل ربطها بـ Power BI.</li>
+                <li><b>الداشبورد التفاعلية بـ Power BI:</b> تصميم صفحة واحدة توضح الإيرادات (5.17M EGP)، صافي الربح (1.75M EGP)، الوحدات (317K)، الخصومات (289.04K EGP)، متوسط التقييم (4.21)، مقارنة المؤشرات عبر 5 سنوات، وتوزيع المحافظات (القاهرة، الجيزة، إسكندرية في الصدارة) مع فلاتر للسنة والشهر والفئة والمدينة وحجم العبوة وDate Slider.</li>
+            </ul>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    render_centered_video(
+        "pepsi_demo.mp4",
+        "ℹ️ ملف الفيديو `pepsi_demo.mp4` غير موجود حالياً في المجلد الرئيسي — ارفعه على GitHub بنفس الاسم ليظهر هنا تلقائياً.",
+    )
+
+    st.markdown("<div style='margin-top: 18px;'></div>", unsafe_allow_html=True)
+
+    df_p_yr, df_p_gov, df_p_cat = load_pepsi_summary_data()
+
+    st.markdown('<div class="filter-bar">', unsafe_allow_html=True)
+    pf1, pf2, pf3 = st.columns(3)
+
+    with pf1:
+        p_year_list = ["All Years (2022–2026)"] + df_p_yr["Year"].tolist()
+        selected_p_year = st.selectbox("Year:", p_year_list)
+
+    with pf2:
+        p_gov_list = ["All Governorates"] + df_p_gov["Governorate"].tolist()
+        selected_p_gov = st.selectbox("Governorate:", p_gov_list)
+
+    with pf3:
+        p_cat_list = ["All Categories"] + df_p_cat["Category"].tolist()
+        selected_p_cat = st.selectbox("Category:", p_cat_list)
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    yr_ratio = 1.0
+    if selected_p_year != "All Years (2022–2026)":
+        row_v = df_p_yr.loc[
+            df_p_yr["Year"] == selected_p_year, "Revenue_M"
+        ].iloc[0]
+        yr_ratio = row_v / df_p_yr["Revenue_M"].sum()
+
+    gov_ratio = 1.0
+    if selected_p_gov != "All Governorates":
+        row_v = df_p_gov.loc[
+            df_p_gov["Governorate"] == selected_p_gov, "Revenue_M"
+        ].iloc[0]
+        gov_ratio = row_v / df_p_gov["Revenue_M"].sum()
+
+    cat_ratio = 1.0
+    if selected_p_cat != "All Categories":
+        row_v = df_p_cat.loc[
+            df_p_cat["Category"] == selected_p_cat, "Units_K"
+        ].iloc[0]
+        cat_ratio = row_v / df_p_cat["Units_K"].sum()
+
+    p_scale = yr_ratio * gov_ratio * cat_ratio
+    p_rev_m = 5.17 * p_scale
+    p_profit_m = 1.75 * p_scale
+    p_units_k = 317.0 * p_scale
+    p_disc_k = 289.04 * p_scale
+    p_rating = 4.21
+
+    pk1, pk2, pk3, pk4, pk5 = st.columns(5)
+    with pk1:
+        render_kpi(
+            "Total Revenue",
+            f"{p_rev_m:,.2f}M EGP",
+            ("<span style='color:#0D9488;'>● 2022–2026</span>", True),
+            "💵",
+        )
+    with pk2:
+        render_kpi(
+            "Net Profit",
+            f"{p_profit_m:,.2f}M EGP",
+            ("<span style='color:#0D9488;'>● Net</span>", True),
+            "📈",
+        )
+    with pk3:
+        render_kpi(
+            "Total Units",
+            f"{p_units_k:,.1f}K",
+            ("<span style='color:#2563EB;'>● Volume</span>", True),
+            "📦",
+        )
+    with pk4:
+        render_kpi(
+            "Discounts",
+            f"{p_disc_k:,.1f}K EGP",
+            ("<span style='color:#D97706;'>● Promo</span>", True),
+            "🏷️",
+        )
+    with pk5:
+        render_kpi(
+            "Avg Rating",
+            f"{p_rating:.2f} / 5",
+            ("<span style='color:#0D9488;'>● CSAT</span>", True),
+            "⭐",
+        )
+
+    st.markdown("<div style='margin-bottom: 10px;'></div>", unsafe_allow_html=True)
+
+    pc1, pc2, pc3 = st.columns(3)
+
+    with pc1:
+        yr_plot = df_p_yr.copy()
+        yr_plot["Plot_Rev_M"] = yr_plot["Revenue_M"] * (gov_ratio * cat_ratio)
+        yr_plot["Plot_Profit_M"] = yr_plot["Net_Profit_M"] * (
+            gov_ratio * cat_ratio
+        )
+        if selected_p_year != "All Years (2022–2026)":
+            yr_plot = yr_plot[yr_plot["Year"] == selected_p_year]
+        fig_p1 = go.Figure()
+        fig_p1.add_trace(
+            go.Bar(
+                x=yr_plot["Year"],
+                y=yr_plot["Plot_Rev_M"],
+                name="Revenue (M)",
+                marker_color=BLUE_ACCENT,
+                text=yr_plot["Plot_Rev_M"].round(2),
+                texttemplate="%{text:.2f}M",
+                textposition="outside",
+            )
+        )
+        fig_p1.add_trace(
+            go.Bar(
+                x=yr_plot["Year"],
+                y=yr_plot["Plot_Profit_M"],
+                name="Net Profit (M)",
+                marker_color=TEAL_PRIMARY,
+                text=yr_plot["Plot_Profit_M"].round(2),
+                texttemplate="%{text:.2f}M",
+                textposition="outside",
+            )
+        )
+        fig_p1.update_layout(barmode="group")
+        st.plotly_chart(
+            style_square_fig(
+                fig_p1,
+                "1. Revenue vs. Net Profit by Year (EGP)",
+                margin=dict(l=20, r=25, t=55, b=20),
+            ),
+            use_container_width=True,
+        )
+
+    with pc2:
+        gov_plot = df_p_gov.copy()
+        gov_plot["Plot_Rev_M"] = gov_plot["Revenue_M"] * (
+            yr_ratio * cat_ratio
+        )
+        if selected_p_gov != "All Governorates":
+            gov_plot = gov_plot[gov_plot["Governorate"] == selected_p_gov]
+        gov_plot = gov_plot.sort_values("Plot_Rev_M", ascending=True)
+        fig_p2 = px.bar(
+            gov_plot,
+            x="Plot_Rev_M",
+            y="Governorate",
+            orientation="h",
+            text="Plot_Rev_M",
+            color="Plot_Rev_M",
+            color_continuous_scale=["#99F6E4", "#0D9488", "#1E3A8A"],
+        )
+        fig_p2.update_traces(
+            texttemplate="%{text:,.2f}M",
+            textposition="outside",
+            cliponaxis=False,
+            textfont=dict(size=13, color="#0F172A", weight="bold"),
+        )
+        st.plotly_chart(
+            style_square_fig(
+                fig_p2,
+                "2. Sales by Governorate (M EGP)",
+                margin=dict(l=20, r=75, t=55, b=20),
+            ),
+            use_container_width=True,
+        )
+
+    with pc3:
+        cat_plot = df_p_cat.copy()
+        cat_plot["Plot_Units_K"] = cat_plot["Units_K"] * (
+            yr_ratio * gov_ratio
+        )
+        if selected_p_cat != "All Categories":
+            cat_plot = cat_plot[cat_plot["Category"] == selected_p_cat]
+        fig_p3 = px.pie(
+            cat_plot,
+            names="Category",
+            values="Plot_Units_K",
+            hole=0.55,
+            color_discrete_sequence=LIGHT_PALETTE,
+        )
+        fig_p3.update_traces(
+            textinfo="percent+label",
+            textfont=dict(size=12, color="#0F172A", weight="bold"),
+        )
+        st.plotly_chart(
+            style_square_fig(
+                fig_p3,
+                "3. Units Volume by Category (K)",
+                margin=dict(l=15, r=15, t=55, b=15),
+            ),
+            use_container_width=True,
+        )
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+
+# =========================================================
+# PROJECT 2: Healthcare Analytics Dashboard (Brief + Toggle)
+# =========================================================
+st.markdown("<div style='margin-top: 22px;'></div>", unsafe_allow_html=True)
+
 st.markdown(
     """
     <div class="project-summary-card">
@@ -760,8 +1085,8 @@ if st.session_state.open_healthcare:
 
     st.markdown(
         """
-        <div style="color: #E2E8F0; font-size: 0.96rem; line-height: 1.75; margin-bottom: 16px;">
-            <h4 style="color: #38BDF8; margin-bottom: 8px;">🔎 ماذا يغطي التحليل؟</h4>
+        <div style="color: #334155; font-size: 0.96rem; line-height: 1.75; margin-bottom: 16px;">
+            <h4 style="color: #0F766E; margin-bottom: 8px;">🔎 ماذا يغطي التحليل؟</h4>
             <ul>
                 <li>مقارنة الإيرادات وعدد الأطباء والمرضى حسب المستشفى (<b>Hospital</b>) والفئة العمرية (<b>Age_Group</b>) والنوع (<b>Gender</b>).</li>
                 <li>تحليل الإيرادات حسب الحالة الطبية (<b>Medical Condition</b>) مثل Cancer وHeart Disease وAlzheimer's وغيرها.</li>
@@ -773,24 +1098,15 @@ if st.session_state.open_healthcare:
         unsafe_allow_html=True,
     )
 
-    # Video Demo Section
-    st.markdown(
-        '<div style="color:#00E5B0; font-weight:700; font-size:1.1rem; margin-bottom:8px;">🎬 عرض توضيحي للداشبورد (Dashboard Walkthrough)</div>',
-        unsafe_allow_html=True,
+    render_centered_video(
+        "healthcare_demo.mp4",
+        "ℹ️ ملف الفيديو `healthcare_demo.mp4` غير موجود حالياً في المجلد الرئيسي — تأكد من إتمام حفظ التغييرات (Commit) على GitHub.",
     )
-    video_path = "healthcare_demo.mp4"
-    if os.path.exists(video_path):
-        st.video(video_path)
-    else:
-        st.info(
-            "ℹ️ ملف الفيديو `healthcare_demo.mp4` غير موجود حالياً في المجلد الرئيسي — تأكد من إتمام حفظ التغييرات (Commit) على GitHub."
-        )
 
     st.markdown("<div style='margin-top: 18px;'></div>", unsafe_allow_html=True)
 
     df_hc_cond, df_hc_hosp, df_hc_days, df_hc_age = load_healthcare_summary_data()
 
-    # Interactive Filters
     st.markdown('<div class="filter-bar">', unsafe_allow_html=True)
     hf1, hf2, hf3 = st.columns(3)
 
@@ -840,35 +1156,35 @@ if st.session_state.open_healthcare:
         render_kpi(
             "Total Patients",
             f"{hc_patients:,}",
-            ("<span style='color:#00E5B0;'>● Cohort</span>", True),
+            ("<span style='color:#0D9488;'>● Cohort</span>", True),
             "🩺",
         )
     with hk2:
         render_kpi(
             "Avg Stay Days",
             f"{hc_avg_stay:.2f} d",
-            ("<span style='color:#38BDF8;'>● LOS</span>", True),
+            ("<span style='color:#2563EB;'>● LOS</span>", True),
             "🛏️",
         )
     with hk3:
         render_kpi(
             "Total Revenue",
             f"{hc_revenue_m:,.2f}M",
-            ("<span style='color:#00E5B0;'>● Gross</span>", True),
+            ("<span style='color:#0D9488;'>● Gross</span>", True),
             "💰",
         )
     with hk4:
         render_kpi(
             "Emergency Rev %",
             f"{hc_emergency_pct:.2f}%",
-            ("<span style='color:#A855F7;'>● ER Share</span>", True),
+            ("<span style='color:#D97706;'>● ER Share</span>", True),
             "🚑",
         )
     with hk5:
         render_kpi(
             "Avg Billing",
             f"{hc_avg_billing:,.0f}",
-            ("<span style='color:#00E5B0;'>● / Case</span>", True),
+            ("<span style='color:#0D9488;'>● / Case</span>", True),
             "🧾",
         )
 
@@ -893,13 +1209,13 @@ if st.session_state.open_healthcare:
             orientation="h",
             text="Filtered_Rev_M",
             color="Filtered_Rev_M",
-            color_continuous_scale=[VIOLET_PURPLE, CYAN_BLUE, MINT_GREEN],
+            color_continuous_scale=["#99F6E4", "#0D9488", "#1E3A8A"],
         )
         fig_hc1.update_traces(
             texttemplate="%{text:,.1f}M",
             textposition="outside",
             cliponaxis=False,
-            textfont=dict(size=13, color="#FFFFFF", weight="bold"),
+            textfont=dict(size=13, color="#0F172A", weight="bold"),
         )
         st.plotly_chart(
             style_square_fig(
@@ -925,13 +1241,13 @@ if st.session_state.open_healthcare:
             orientation="h",
             text="Filtered_Rev_M",
             color="Hospital",
-            color_discrete_sequence=FINOVATE_PALETTE,
+            color_discrete_sequence=LIGHT_PALETTE,
         )
         fig_hc2.update_traces(
             texttemplate="%{text:,.1f}M",
             textposition="outside",
             cliponaxis=False,
-            textfont=dict(size=13, color="#FFFFFF", weight="bold"),
+            textfont=dict(size=13, color="#0F172A", weight="bold"),
         )
         st.plotly_chart(
             style_square_fig(
@@ -952,11 +1268,11 @@ if st.session_state.open_healthcare:
             x="Day_Short",
             y="Filtered_Admissions",
             markers=True,
-            color_discrete_sequence=[MINT_GREEN],
+            color_discrete_sequence=[TEAL_PRIMARY],
         )
         fig_hc3.update_traces(
-            line=dict(color=MINT_GREEN, width=3, shape="spline"),
-            fillcolor="rgba(0, 229, 176, 0.18)",
+            line=dict(color=TEAL_PRIMARY, width=3, shape="spline"),
+            fillcolor="rgba(13, 148, 136, 0.14)",
         )
         st.plotly_chart(
             style_square_fig(
@@ -971,7 +1287,7 @@ if st.session_state.open_healthcare:
 
 
 # =========================================================
-# PROJECT 2: Olist E-Commerce Executive Dashboard (Brief + Toggle)
+# PROJECT 3: Olist E-Commerce Executive Dashboard (Brief + Toggle)
 # =========================================================
 st.markdown("<div style='margin-top: 22px;'></div>", unsafe_allow_html=True)
 
@@ -1065,10 +1381,10 @@ if st.session_state.open_olist:
         if len(s) >= 2 and s.iloc[-2] > 0:
             pct = ((s.iloc[-1] - s.iloc[-2]) / s.iloc[-2]) * 100
             if pct >= 0:
-                return f"<span style='color:#00E5B0;'>▲ +{pct:.1f}% mo</span>", True
+                return f"<span style='color:#0D9488;'>▲ +{pct:.1f}% mo</span>", True
             else:
-                return f"<span style='color:#F43F5E;'>▼ {pct:.1f}% mo</span>", False
-        return "<span style='color:#8A99B5;'>— 0.0% mo</span>", True
+                return f"<span style='color:#E11D48;'>▼ {pct:.1f}% mo</span>", False
+        return "<span style='color:#64748B;'>— 0.0% mo</span>", True
 
     total_revenue = df["total_amount"].sum()
     total_product_sales = df["price"].sum()
@@ -1092,7 +1408,7 @@ if st.session_state.open_olist:
     ).fillna(0)
 
     st.markdown(
-        f"<span style='color:#8A99B5; font-size:13px;'>Active Filter: State = <b style='color:#00E5B0'>{selected_state}</b> | Category = <b style='color:#38BDF8'>{selected_cat}</b> | Payment = <b style='color:#A855F7'>{selected_pay}</b> | Year = <b style='color:#00E5B0'>{selected_year}</b></span>",
+        f"<span style='color:#64748B; font-size:13px;'>Active Filter: State = <b style='color:#0F766E'>{selected_state}</b> | Category = <b style='color:#2563EB'>{selected_cat}</b> | Payment = <b style='color:#4F46E5'>{selected_pay}</b> | Year = <b style='color:#0F766E'>{selected_year}</b></span>",
         unsafe_allow_html=True,
     )
     st.markdown("<div style='margin-bottom: 10px;'></div>", unsafe_allow_html=True)
@@ -1153,11 +1469,11 @@ if st.session_state.open_olist:
             x="Year_Month",
             y="total_amount",
             markers=True,
-            color_discrete_sequence=[MINT_GREEN],
+            color_discrete_sequence=[TEAL_PRIMARY],
         )
         fig1.update_traces(
-            line=dict(color=MINT_GREEN, width=3, shape="spline"),
-            fillcolor="rgba(0, 229, 176, 0.18)",
+            line=dict(color=TEAL_PRIMARY, width=3, shape="spline"),
+            fillcolor="rgba(13, 148, 136, 0.14)",
         )
         st.plotly_chart(
             style_square_fig(fig1, "1. Monthly Revenue Trend ($)"),
@@ -1176,19 +1492,19 @@ if st.session_state.open_olist:
             names="Component",
             values="Amount",
             hole=0.58,
-            color_discrete_sequence=[MINT_GREEN, VIOLET_PURPLE],
+            color_discrete_sequence=[TEAL_PRIMARY, BLUE_ACCENT],
         )
         fig2.update_traces(
             textinfo="percent+label",
-            textfont=dict(size=15, color="#FFFFFF", weight="bold"),
+            textfont=dict(size=13, color="#0F172A", weight="bold"),
         )
         fig2.add_annotation(
             text=f"Freight<br>{freight_pct:.1f}%",
             x=0.5,
             y=0.5,
-            font_size=14,
+            font_size=13,
             showarrow=False,
-            font_color="#FFFFFF",
+            font_color="#0F172A",
         )
         st.plotly_chart(
             style_square_fig(
@@ -1213,13 +1529,13 @@ if st.session_state.open_olist:
             orientation="h",
             text="total_amount",
             color="total_amount",
-            color_continuous_scale=[VIOLET_PURPLE, CYAN_BLUE, MINT_GREEN],
+            color_continuous_scale=["#99F6E4", "#0D9488", "#1E3A8A"],
         )
         fig3.update_traces(
             texttemplate="%{text:,.0f}$",
             textposition="outside",
             cliponaxis=False,
-            textfont=dict(size=14, color="#FFFFFF", weight="bold"),
+            textfont=dict(size=13, color="#0F172A", weight="bold"),
         )
         fig3.update_yaxes(categoryorder="total ascending")
         st.plotly_chart(
@@ -1244,17 +1560,12 @@ if st.session_state.open_olist:
             path=["short_cat"],
             values="price",
             color="price",
-            color_continuous_scale=[
-                VIOLET_PURPLE,
-                ROYAL_BLUE,
-                CYAN_BLUE,
-                MINT_GREEN,
-            ],
+            color_continuous_scale=["#CCFBF1", "#2DD4BF", "#0284C7", "#1E3A8A"],
         )
         fig4.update_traces(
             textinfo="label+value",
             texttemplate="<b>%{label}</b><br>$%{value:,.0f}",
-            textfont=dict(size=14, color="#FFFFFF"),
+            textfont=dict(size=13, color="#0F172A"),
         )
         st.plotly_chart(
             style_square_fig(
@@ -1276,13 +1587,13 @@ if st.session_state.open_olist:
             orientation="h",
             text="val",
             color="payment_type",
-            color_discrete_sequence=FINOVATE_PALETTE,
+            color_discrete_sequence=LIGHT_PALETTE,
         )
         fig5.update_traces(
             texttemplate="%{text:,.0f}$",
             textposition="outside",
             cliponaxis=False,
-            textfont=dict(size=14, color="#FFFFFF", weight="bold"),
+            textfont=dict(size=13, color="#0F172A", weight="bold"),
         )
         st.plotly_chart(
             style_square_fig(
@@ -1300,13 +1611,13 @@ if st.session_state.open_olist:
             y="cnt",
             text="cnt",
             color="review_score",
-            color_continuous_scale=[CORAL_RED, VIOLET_PURPLE, MINT_GREEN],
+            color_continuous_scale=["#FECDD3", "#F59E0B", "#0D9488"],
         )
         fig6.update_traces(
             texttemplate="%{text:,}",
             textposition="outside",
             cliponaxis=False,
-            textfont=dict(size=14, color="#FFFFFF", weight="bold"),
+            textfont=dict(size=13, color="#0F172A", weight="bold"),
         )
         fig6.update_xaxes(title="Stars (1-5)")
         st.plotly_chart(
@@ -1344,13 +1655,13 @@ if st.session_state.open_olist:
             y="order_id",
             text="order_id",
             color="order_id",
-            color_continuous_scale=[VIOLET_PURPLE, CYAN_BLUE],
+            color_continuous_scale=["#99F6E4", "#0284C7"],
         )
         fig7.update_traces(
             texttemplate="%{text:,}",
             textposition="outside",
             cliponaxis=False,
-            textfont=dict(size=14, color="#FFFFFF", weight="bold"),
+            textfont=dict(size=13, color="#0F172A", weight="bold"),
         )
         st.plotly_chart(
             style_square_fig(
@@ -1367,11 +1678,11 @@ if st.session_state.open_olist:
             hourly,
             x="Hour",
             y="order_id",
-            color_discrete_sequence=[VIOLET_PURPLE],
+            color_discrete_sequence=[BLUE_ACCENT],
         )
         fig8.update_traces(
-            line=dict(color=VIOLET_PURPLE, width=3, shape="spline"),
-            fillcolor="rgba(139, 92, 246, 0.22)",
+            line=dict(color=BLUE_ACCENT, width=3, shape="spline"),
+            fillcolor="rgba(37, 99, 235, 0.14)",
         )
         fig8.update_xaxes(title="Hour (0-23)")
         st.plotly_chart(
@@ -1392,14 +1703,14 @@ if st.session_state.open_olist:
                 y=status_df["order_status"],
                 x=status_df["order_id"],
                 textinfo="value+percent initial",
-                textfont=dict(size=14, color="#FFFFFF", weight="bold"),
+                textfont=dict(size=13, color="#0F172A", weight="bold"),
                 marker=dict(
                     color=[
-                        MINT_GREEN,
-                        CYAN_BLUE,
-                        ROYAL_BLUE,
-                        VIOLET_PURPLE,
-                        CORAL_RED,
+                        TEAL_PRIMARY,
+                        SKY_SOFT,
+                        BLUE_ACCENT,
+                        AMBER_SOFT,
+                        ROSE_SOFT,
                     ]
                 ),
             )
