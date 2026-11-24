@@ -16,7 +16,15 @@ st.set_page_config(
 )
 
 # ---------------------------------------------------------
-# 2. Custom CSS (Finovate Theme & Clean Spacing)
+# 2. Session State for Project Details Toggle
+# ---------------------------------------------------------
+if "open_olist" not in st.session_state:
+    st.session_state.open_olist = False
+if "open_healthcare" not in st.session_state:
+    st.session_state.open_healthcare = False
+
+# ---------------------------------------------------------
+# 3. Custom CSS (Finovate Theme & Clean Spacing)
 # ---------------------------------------------------------
 st.markdown(
     """
@@ -39,7 +47,7 @@ st.markdown(
         max-width: 100% !important;
     }
 
-    /* Hero Section Container with Neon Glow & Zero Top Gap */
+    /* Hero Section Container */
     .hero-container {
         background: linear-gradient(145deg, #0D182E 0%, #0A1324 100%);
         border: 1px solid #1E355E;
@@ -108,15 +116,64 @@ st.markdown(
         margin-bottom: 20px;
     }
 
-    /* Project Showcase Banner */
-    .project-banner {
+    /* Project Summary Card (Compact View on Scroll) */
+    .project-summary-card {
         background: linear-gradient(145deg, #0D182E 0%, #0A1324 100%);
         border: 1px solid #1E355E;
         border-radius: 16px;
-        padding: 20px 26px;
-        margin-top: 15px;
-        margin-bottom: 18px;
-        box-shadow: 0 0 25px rgba(56, 189, 248, 0.16);
+        padding: 22px 26px;
+        margin-bottom: 10px;
+        box-shadow: 0 0 25px rgba(56, 189, 248, 0.14);
+        transition: all 0.3s ease;
+    }
+    .project-summary-card:hover {
+        border-color: #38BDF8;
+        box-shadow: 0 0 32px rgba(56, 189, 248, 0.28);
+    }
+    .project-card-title {
+        font-size: 1.55rem;
+        font-weight: 800;
+        color: #FFFFFF;
+        margin-bottom: 6px;
+    }
+    .project-card-brief {
+        color: #CBD5E1;
+        font-size: 0.98rem;
+        line-height: 1.55;
+        margin-bottom: 12px;
+    }
+    .project-highlights {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 10px;
+        margin-bottom: 6px;
+        color: #00E5B0;
+        font-size: 0.88rem;
+        font-weight: 600;
+    }
+
+    .tool-badge {
+        display: inline-block;
+        background: rgba(56, 189, 248, 0.12);
+        border: 1px solid rgba(56, 189, 248, 0.35);
+        color: #38BDF8;
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 999px;
+        margin-right: 6px;
+        margin-top: 4px;
+    }
+
+    /* Expanded Details Container */
+    .project-details-box {
+        background: rgba(9, 17, 36, 0.85);
+        border: 1px solid #264375;
+        border-radius: 16px;
+        padding: 20px 22px;
+        margin-top: 10px;
+        margin-bottom: 24px;
     }
 
     /* Filter Bar */
@@ -241,6 +298,21 @@ st.markdown(
         border-color: #38BDF8;
         box-shadow: 0 0 40px rgba(56, 189, 248, 0.4);
     }
+
+    /* Toggle Button Styling */
+    div.stButton > button {
+        background: linear-gradient(90deg, #0E7490 0%, #2563EB 100%) !important;
+        color: #FFFFFF !important;
+        border: 1px solid #38BDF8 !important;
+        border-radius: 10px !important;
+        font-weight: 700 !important;
+        padding: 0.45rem 1.1rem !important;
+        transition: all 0.25s ease !important;
+    }
+    div.stButton > button:hover {
+        box-shadow: 0 0 18px rgba(56, 189, 248, 0.55) !important;
+        transform: translateY(-1px) !important;
+    }
 </style>
 """,
     unsafe_allow_html=True,
@@ -263,7 +335,7 @@ FINOVATE_PALETTE = [
 ]
 
 # ---------------------------------------------------------
-# 3. Data Provider
+# 4. Data Providers
 # ---------------------------------------------------------
 @st.cache_data
 def load_full_data():
@@ -335,6 +407,65 @@ def load_full_data():
     return df, df_pay, df_rev
 
 
+@st.cache_data
+def load_healthcare_summary_data():
+    conditions = [
+        "Cancer",
+        "Heart Disease",
+        "Alzheimer's",
+        "Diabetes",
+        "Hypertension",
+        "Asthma",
+    ]
+    cond_rev_millions = [245.6, 228.4, 204.8, 192.5, 178.2, 162.34]
+    df_cond = pd.DataFrame(
+        {"Medical_Condition": conditions, "Revenue_M": cond_rev_millions}
+    )
+
+    hospitals = [
+        "Hospital A",
+        "Hospital B",
+        "Hospital C",
+        "Hospital D",
+        "Hospital E",
+    ]
+    hosp_rev_millions = [278.4, 254.2, 238.9, 226.1, 214.24]
+    hosp_doctors = [142, 128, 119, 112, 105]
+    df_hosp = pd.DataFrame(
+        {
+            "Hospital": hospitals,
+            "Revenue_M": hosp_rev_millions,
+            "Doctors": hosp_doctors,
+        }
+    )
+
+    days_order = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+    ]
+    admissions_cnt = [8240, 8090, 8150, 7980, 7820, 7560, 7660]
+    df_days = pd.DataFrame(
+        {
+            "Admission_Day_Name": days_order,
+            "Day_Short": [d[:3] for d in days_order],
+            "Admissions": admissions_cnt,
+        }
+    )
+
+    age_groups = ["18-30", "31-45", "46-60", "61-75", "75+"]
+    age_patients = [8900, 11400, 13200, 12100, 9900]
+    df_age = pd.DataFrame(
+        {"Age_Group": age_groups, "Patients": age_patients}
+    )
+
+    return df_cond, df_hosp, df_days, df_age
+
+
 # ---------------------------------------------------------
 # SECTION 1: Profile
 # ---------------------------------------------------------
@@ -402,7 +533,7 @@ st.markdown(
             <div class="stat-label">Years of Experience</div>
         </div>
         <div class="stat-box">
-            <div class="stat-number">1+</div>
+            <div class="stat-number">2+</div>
             <div class="stat-label">Featured Projects</div>
         </div>
         <div class="stat-box">
@@ -523,116 +654,6 @@ with col_lang:
         """)
 
 
-# ---------------------------------------------------------
-# SECTION 2: Featured Projects (Scrollable Flow)
-# ---------------------------------------------------------
-st.markdown(
-    '<div class="section-header">🚀 Featured Projects</div>',
-    unsafe_allow_html=True,
-)
-
-df_raw, _, df_reviews = load_full_data()
-
-st.markdown(
-    """
-    <div class="project-banner">
-        <div class="hero-title" style="font-size: 2.1rem !important; margin-bottom: 6px;">🛒 Olist E-Commerce Executive Dashboard</div>
-        <div style="color: #94A3B8; font-size: 0.98rem;">
-            End-to-end interactive sales, revenue, freight, payment, and fulfillment performance analysis across states, product categories, and time periods.
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-# Horizontal Filters Bar
-st.markdown('<div class="filter-bar">', unsafe_allow_html=True)
-f1, f2, f3, f4 = st.columns(4)
-
-with f1:
-    state_list = ["All States"] + sorted(
-        df_raw["customer_state"].dropna().unique().tolist()
-    )
-    selected_state = st.selectbox("Customer State:", state_list)
-
-with f2:
-    cat_list = ["All Categories"] + sorted(
-        df_raw["category"].dropna().unique().tolist()
-    )
-    selected_cat = st.selectbox("Product Category:", cat_list)
-
-with f3:
-    pay_list = ["All Payment Types"] + sorted(
-        df_raw["payment_type"].dropna().unique().tolist()
-    )
-    selected_pay = st.selectbox("Payment Type:", pay_list)
-
-with f4:
-    year_list = ["All Years"] + sorted(
-        [y for y in df_raw["Year"].dropna().unique().tolist() if y != "nan"]
-    )
-    selected_year = st.selectbox("Order Year:", year_list)
-st.markdown("</div>", unsafe_allow_html=True)
-
-# Filter application
-df = df_raw.copy()
-if selected_state != "All States":
-    df = df[df["customer_state"] == selected_state]
-if selected_cat != "All Categories":
-    df = df[df["category"] == selected_cat]
-if selected_pay != "All Payment Types":
-    df = df[df["payment_type"] == selected_pay]
-if selected_year != "All Years":
-    df = df[df["Year"] == selected_year]
-
-df_payments = (
-    df.groupby("payment_type")
-    .agg(cnt=("order_id", "count"), val=("total_amount", "sum"))
-    .reset_index()
-)
-
-
-def get_mom_delta(monthly_series):
-    s = monthly_series.sort_index()
-    if len(s) >= 2 and s.iloc[-2] > 0:
-        pct = ((s.iloc[-1] - s.iloc[-2]) / s.iloc[-2]) * 100
-        if pct >= 0:
-            return f"<span style='color:#00E5B0;'>▲ +{pct:.1f}% mo</span>", True
-        else:
-            return f"<span style='color:#F43F5E;'>▼ {pct:.1f}% mo</span>", False
-    return "<span style='color:#8A99B5;'>— 0.0% mo</span>", True
-
-
-total_revenue = df["total_amount"].sum()
-total_product_sales = df["price"].sum()
-total_freight = df["freight_value"].sum()
-total_orders = df["order_id"].nunique()
-total_customers = df["customer_unique_id"].nunique()
-aov = total_revenue / total_orders if total_orders > 0 else 0
-freight_pct = (
-    (total_freight / total_revenue * 100) if total_revenue > 0 else 0
-)
-avg_items = len(df) / total_orders if total_orders > 0 else 0
-
-m_rev = df.groupby("Year_Month")["total_amount"].sum()
-m_sales = df.groupby("Year_Month")["price"].sum()
-m_orders = df.groupby("Year_Month")["order_id"].nunique()
-m_aov = (m_rev / m_orders).fillna(0)
-m_cust = df.groupby("Year_Month")["customer_unique_id"].nunique()
-m_freight = df.groupby("Year_Month")["freight_value"].sum()
-m_items = (
-    df.groupby("Year_Month")["order_id"].count() / m_orders
-).fillna(0)
-
-st.markdown(
-    f"<span style='color:#8A99B5; font-size:13px;'>Active Filter: State = <b style='color:#00E5B0'>{selected_state}</b> | Category = <b style='color:#38BDF8'>{selected_cat}</b> | Payment = <b style='color:#A855F7'>{selected_pay}</b> | Year = <b style='color:#00E5B0'>{selected_year}</b></span>",
-    unsafe_allow_html=True,
-)
-st.markdown(
-    "<div style='margin-bottom: 10px;'></div>", unsafe_allow_html=True
-)
-
-
 def render_kpi(title, value, delta_tuple, icon):
     delta_html, _ = delta_tuple
     st.markdown(
@@ -648,51 +669,6 @@ def render_kpi(title, value, delta_tuple, icon):
         """,
         unsafe_allow_html=True,
     )
-
-
-# Row 0: 7 KPI Cards
-k1, k2, k3, k4, k5, k6, k7 = st.columns(7)
-with k1:
-    render_kpi(
-        "Total Revenue",
-        f"${total_revenue / 1e3:.1f}K",
-        get_mom_delta(m_rev),
-        "💵",
-    )
-with k2:
-    render_kpi(
-        "Net Sales",
-        f"${total_product_sales / 1e3:.1f}K",
-        get_mom_delta(m_sales),
-        "📦",
-    )
-with k3:
-    render_kpi(
-        "Total Orders", f"{total_orders:,}", get_mom_delta(m_orders), "🛍️"
-    )
-with k4:
-    render_kpi(
-        "Avg Order (AOV)", f"${aov:,.2f}", get_mom_delta(m_aov), "📈"
-    )
-with k5:
-    render_kpi(
-        "Customers", f"{total_customers:,}", get_mom_delta(m_cust), "👥"
-    )
-with k6:
-    render_kpi(
-        "Total Freight",
-        f"${total_freight / 1e3:.1f}K",
-        get_mom_delta(m_freight),
-        "🚚",
-    )
-with k7:
-    render_kpi(
-        "Items / Order", f"{avg_items:.2f}", get_mom_delta(m_items), "⚖️"
-    )
-
-st.markdown(
-    "<div style='margin-bottom: 10px;'></div>", unsafe_allow_html=True
-)
 
 
 def style_square_fig(fig, title, margin=dict(l=20, r=30, t=55, b=20)):
@@ -731,202 +707,710 @@ def style_square_fig(fig, title, margin=dict(l=20, r=30, t=55, b=20)):
     return fig
 
 
-# ROW 1: Monthly Trend | Revenue Split | Top States
-r1_c1, r1_c2, r1_c3 = st.columns(3)
+# ---------------------------------------------------------
+# SECTION 2: Featured Projects (Brief Cards -> Click to Expand)
+# ---------------------------------------------------------
+st.markdown(
+    '<div class="section-header">🚀 Featured Projects</div>',
+    unsafe_allow_html=True,
+)
 
-with r1_c1:
-    monthly = (
-        df.groupby("Year_Month")["total_amount"]
-        .sum()
+# =========================================================
+# PROJECT 1: Healthcare Analytics Dashboard (Brief + Toggle)
+# =========================================================
+st.markdown(
+    """
+    <div class="project-summary-card">
+        <div class="project-card-title">🏥 Healthcare Analytics Dashboard | End-to-End Data Analysis Project</div>
+        <div class="project-card-brief">
+            تحويل بيانات الرعاية الصحية الخام إلى لوحة قياس تفاعلية لتحليل أداء المستشفيات والحالات الطبية ومؤشرات الإقامة والطوارئ لدعم القرارات الطبية والتشغيلية.
+        </div>
+        <div class="project-highlights">
+            <span>👥 55,500 Patients</span>
+            <span>•</span>
+            <span>💰 1,211.84M Total Revenue</span>
+            <span>•</span>
+            <span>🛏️ 17.84 Avg Stay Days</span>
+            <span>•</span>
+            <span>🚑 31.60% Emergency Share</span>
+        </div>
+        <div>
+            <span class="tool-badge">SQL</span>
+            <span class="tool-badge">Python</span>
+            <span class="tool-badge">Power BI</span>
+            <span class="tool-badge">DAX</span>
+            <span class="tool-badge">Interactive Demo Video</span>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+hc_btn_label = (
+    "🔽 إخفاء تفاصيل مشروع Healthcare"
+    if st.session_state.open_healthcare
+    else "🔍 اضغط لعرض التفاصيل والفيديو التوضيحي والداشبورد"
+)
+if st.button(hc_btn_label, key="btn_toggle_hc"):
+    st.session_state.open_healthcare = not st.session_state.open_healthcare
+    st.rerun()
+
+if st.session_state.open_healthcare:
+    st.markdown('<div class="project-details-box">', unsafe_allow_html=True)
+
+    st.markdown(
+        """
+        <div style="color: #E2E8F0; font-size: 0.96rem; line-height: 1.75; margin-bottom: 16px;">
+            <h4 style="color: #38BDF8; margin-bottom: 8px;">🔎 ماذا يغطي التحليل؟</h4>
+            <ul>
+                <li>مقارنة الإيرادات وعدد الأطباء والمرضى حسب المستشفى (<b>Hospital</b>) والفئة العمرية (<b>Age_Group</b>) والنوع (<b>Gender</b>).</li>
+                <li>تحليل الإيرادات حسب الحالة الطبية (<b>Medical Condition</b>) مثل Cancer وHeart Disease وAlzheimer's وغيرها.</li>
+                <li>تتبع نسبة إيرادات الطوارئ حسب الدواء (<b>Medication</b>) وحركة الدخول حسب أيام الأسبوع (<b>Admission_Day_Name</b>).</li>
+                <li>فلاتر تفاعلية (<b>Slicers</b>) لتصفية البيانات حسب الحالة الطبية، الفئة العمرية، السنة، الشهر، والمستشفى مع زر إعادة تعيين بضغطة واحدة.</li>
+            </ul>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Video Demo Section
+    st.markdown(
+        '<div style="color:#00E5B0; font-weight:700; font-size:1.1rem; margin-bottom:8px;">🎬 عرض توضيحي للداشبورد (Dashboard Walkthrough)</div>',
+        unsafe_allow_html=True,
+    )
+    video_path = "healthcare_demo.mp4"
+    if os.path.exists(video_path):
+        st.video(video_path)
+    else:
+        st.info(
+            "ℹ️ ملف الفيديو `healthcare_demo.mp4` غير موجود حالياً في المجلد الرئيسي — تأكد من إتمام حفظ التغييرات (Commit) على GitHub."
+        )
+
+    st.markdown("<div style='margin-top: 18px;'></div>", unsafe_allow_html=True)
+
+    df_hc_cond, df_hc_hosp, df_hc_days, df_hc_age = load_healthcare_summary_data()
+
+    # Interactive Filters
+    st.markdown('<div class="filter-bar">', unsafe_allow_html=True)
+    hf1, hf2, hf3 = st.columns(3)
+
+    with hf1:
+        hc_cond_list = ["All Conditions"] + df_hc_cond["Medical_Condition"].tolist()
+        selected_hc_cond = st.selectbox("Medical Condition:", hc_cond_list)
+
+    with hf2:
+        hc_hosp_list = ["All Hospitals"] + df_hc_hosp["Hospital"].tolist()
+        selected_hc_hosp = st.selectbox("Hospital:", hc_hosp_list)
+
+    with hf3:
+        hc_age_list = ["All Age Groups"] + df_hc_age["Age_Group"].tolist()
+        selected_hc_age = st.selectbox("Age Group:", hc_age_list)
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    cond_ratio = 1.0
+    if selected_hc_cond != "All Conditions":
+        row_val = df_hc_cond.loc[
+            df_hc_cond["Medical_Condition"] == selected_hc_cond, "Revenue_M"
+        ].iloc[0]
+        cond_ratio = row_val / df_hc_cond["Revenue_M"].sum()
+
+    hosp_ratio = 1.0
+    if selected_hc_hosp != "All Hospitals":
+        row_val = df_hc_hosp.loc[
+            df_hc_hosp["Hospital"] == selected_hc_hosp, "Revenue_M"
+        ].iloc[0]
+        hosp_ratio = row_val / df_hc_hosp["Revenue_M"].sum()
+
+    age_ratio = 1.0
+    if selected_hc_age != "All Age Groups":
+        row_val = df_hc_age.loc[
+            df_hc_age["Age_Group"] == selected_hc_age, "Patients"
+        ].iloc[0]
+        age_ratio = row_val / df_hc_age["Patients"].sum()
+
+    scale = cond_ratio * hosp_ratio * age_ratio
+    hc_patients = int(round(55500 * scale))
+    hc_revenue_m = 1211.84 * scale
+    hc_avg_stay = 17.84
+    hc_emergency_pct = 31.60
+    hc_avg_billing = 21835 * (0.92 + 0.08 * scale) if scale < 1 else 21835
+
+    hk1, hk2, hk3, hk4, hk5 = st.columns(5)
+    with hk1:
+        render_kpi(
+            "Total Patients",
+            f"{hc_patients:,}",
+            ("<span style='color:#00E5B0;'>● Cohort</span>", True),
+            "🩺",
+        )
+    with hk2:
+        render_kpi(
+            "Avg Stay Days",
+            f"{hc_avg_stay:.2f} d",
+            ("<span style='color:#38BDF8;'>● LOS</span>", True),
+            "🛏️",
+        )
+    with hk3:
+        render_kpi(
+            "Total Revenue",
+            f"{hc_revenue_m:,.2f}M",
+            ("<span style='color:#00E5B0;'>● Gross</span>", True),
+            "💰",
+        )
+    with hk4:
+        render_kpi(
+            "Emergency Rev %",
+            f"{hc_emergency_pct:.2f}%",
+            ("<span style='color:#A855F7;'>● ER Share</span>", True),
+            "🚑",
+        )
+    with hk5:
+        render_kpi(
+            "Avg Billing",
+            f"{hc_avg_billing:,.0f}",
+            ("<span style='color:#00E5B0;'>● / Case</span>", True),
+            "🧾",
+        )
+
+    st.markdown("<div style='margin-bottom: 10px;'></div>", unsafe_allow_html=True)
+
+    hc_c1, hc_c2, hc_c3 = st.columns(3)
+
+    with hc_c1:
+        cond_plot = df_hc_cond.copy()
+        cond_plot["Filtered_Rev_M"] = cond_plot["Revenue_M"] * (
+            hosp_ratio * age_ratio
+        )
+        if selected_hc_cond != "All Conditions":
+            cond_plot = cond_plot[
+                cond_plot["Medical_Condition"] == selected_hc_cond
+            ]
+        cond_plot = cond_plot.sort_values("Filtered_Rev_M", ascending=True)
+        fig_hc1 = px.bar(
+            cond_plot,
+            x="Filtered_Rev_M",
+            y="Medical_Condition",
+            orientation="h",
+            text="Filtered_Rev_M",
+            color="Filtered_Rev_M",
+            color_continuous_scale=[VIOLET_PURPLE, CYAN_BLUE, MINT_GREEN],
+        )
+        fig_hc1.update_traces(
+            texttemplate="%{text:,.1f}M",
+            textposition="outside",
+            cliponaxis=False,
+            textfont=dict(size=13, color="#FFFFFF", weight="bold"),
+        )
+        st.plotly_chart(
+            style_square_fig(
+                fig_hc1,
+                "1. Revenue by Medical Condition (M)",
+                margin=dict(l=20, r=75, t=55, b=20),
+            ),
+            use_container_width=True,
+        )
+
+    with hc_c2:
+        hosp_plot = df_hc_hosp.copy()
+        hosp_plot["Filtered_Rev_M"] = hosp_plot["Revenue_M"] * (
+            cond_ratio * age_ratio
+        )
+        if selected_hc_hosp != "All Hospitals":
+            hosp_plot = hosp_plot[hosp_plot["Hospital"] == selected_hc_hosp]
+        hosp_plot = hosp_plot.sort_values("Filtered_Rev_M", ascending=True)
+        fig_hc2 = px.bar(
+            hosp_plot,
+            x="Filtered_Rev_M",
+            y="Hospital",
+            orientation="h",
+            text="Filtered_Rev_M",
+            color="Hospital",
+            color_discrete_sequence=FINOVATE_PALETTE,
+        )
+        fig_hc2.update_traces(
+            texttemplate="%{text:,.1f}M",
+            textposition="outside",
+            cliponaxis=False,
+            textfont=dict(size=13, color="#FFFFFF", weight="bold"),
+        )
+        st.plotly_chart(
+            style_square_fig(
+                fig_hc2,
+                "2. Revenue by Hospital (M)",
+                margin=dict(l=20, r=75, t=55, b=20),
+            ),
+            use_container_width=True,
+        )
+
+    with hc_c3:
+        days_plot = df_hc_days.copy()
+        days_plot["Filtered_Admissions"] = (
+            days_plot["Admissions"] * scale
+        ).round().astype(int)
+        fig_hc3 = px.area(
+            days_plot,
+            x="Day_Short",
+            y="Filtered_Admissions",
+            markers=True,
+            color_discrete_sequence=[MINT_GREEN],
+        )
+        fig_hc3.update_traces(
+            line=dict(color=MINT_GREEN, width=3, shape="spline"),
+            fillcolor="rgba(0, 229, 176, 0.18)",
+        )
+        st.plotly_chart(
+            style_square_fig(
+                fig_hc3,
+                "3. Admissions by Day of Week",
+                margin=dict(l=20, r=25, t=55, b=20),
+            ),
+            use_container_width=True,
+        )
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+
+# =========================================================
+# PROJECT 2: Olist E-Commerce Executive Dashboard (Brief + Toggle)
+# =========================================================
+st.markdown("<div style='margin-top: 22px;'></div>", unsafe_allow_html=True)
+
+st.markdown(
+    """
+    <div class="project-summary-card">
+        <div class="project-card-title">🛒 Olist E-Commerce Executive Dashboard</div>
+        <div class="project-card-brief">
+            لوحة قياس تنفيذية تفاعلية لتحليل أداء المبيعات والإيرادات وتكلفة الشحن وطرق الدفع ومعدلات إتمام الطلبات عبر الولايات والفئات والفترات الزمنية.
+        </div>
+        <div class="project-highlights">
+            <span>🛍️ 1,500+ Orders Sampled</span>
+            <span>•</span>
+            <span>📊 7 Executive KPIs</span>
+            <span>•</span>
+            <span>📈 9 Interactive Visuals</span>
+            <span>•</span>
+            <span>🎛️ Multi-Dimensional Filters</span>
+        </div>
+        <div>
+            <span class="tool-badge">Python</span>
+            <span class="tool-badge">SQL</span>
+            <span class="tool-badge">Streamlit</span>
+            <span class="tool-badge">Plotly</span>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+olist_btn_label = (
+    "🔽 إخفاء تفاصيل مشروع Olist E-Commerce"
+    if st.session_state.open_olist
+    else "🔍 اضغط لعرض التفاصيل والداشبورد التفاعلي"
+)
+if st.button(olist_btn_label, key="btn_toggle_olist"):
+    st.session_state.open_olist = not st.session_state.open_olist
+    st.rerun()
+
+if st.session_state.open_olist:
+    st.markdown('<div class="project-details-box">', unsafe_allow_html=True)
+
+    df_raw, _, df_reviews = load_full_data()
+
+    st.markdown('<div class="filter-bar">', unsafe_allow_html=True)
+    f1, f2, f3, f4 = st.columns(4)
+
+    with f1:
+        state_list = ["All States"] + sorted(
+            df_raw["customer_state"].dropna().unique().tolist()
+        )
+        selected_state = st.selectbox("Customer State:", state_list)
+
+    with f2:
+        cat_list = ["All Categories"] + sorted(
+            df_raw["category"].dropna().unique().tolist()
+        )
+        selected_cat = st.selectbox("Product Category:", cat_list)
+
+    with f3:
+        pay_list = ["All Payment Types"] + sorted(
+            df_raw["payment_type"].dropna().unique().tolist()
+        )
+        selected_pay = st.selectbox("Payment Type:", pay_list)
+
+    with f4:
+        year_list = ["All Years"] + sorted(
+            [y for y in df_raw["Year"].dropna().unique().tolist() if y != "nan"]
+        )
+        selected_year = st.selectbox("Order Year:", year_list)
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    df = df_raw.copy()
+    if selected_state != "All States":
+        df = df[df["customer_state"] == selected_state]
+    if selected_cat != "All Categories":
+        df = df[df["category"] == selected_cat]
+    if selected_pay != "All Payment Types":
+        df = df[df["payment_type"] == selected_pay]
+    if selected_year != "All Years":
+        df = df[df["Year"] == selected_year]
+
+    df_payments = (
+        df.groupby("payment_type")
+        .agg(cnt=("order_id", "count"), val=("total_amount", "sum"))
         .reset_index()
-        .sort_values("Year_Month")
-    )
-    fig1 = px.area(
-        monthly,
-        x="Year_Month",
-        y="total_amount",
-        markers=True,
-        color_discrete_sequence=[MINT_GREEN],
-    )
-    fig1.update_traces(
-        line=dict(color=MINT_GREEN, width=3, shape="spline"),
-        fillcolor="rgba(0, 229, 176, 0.18)",
-    )
-    st.plotly_chart(
-        style_square_fig(fig1, "1. Monthly Revenue Trend ($)"),
-        use_container_width=True,
     )
 
-with r1_c2:
-    comp_df = pd.DataFrame(
-        {
-            "Component": ["Product Sales", "Freight Cost"],
-            "Amount": [total_product_sales, total_freight],
-        }
-    )
-    fig2 = px.pie(
-        comp_df,
-        names="Component",
-        values="Amount",
-        hole=0.58,
-        color_discrete_sequence=[MINT_GREEN, VIOLET_PURPLE],
-    )
-    fig2.update_traces(
-        textinfo="percent+label",
-        textfont=dict(size=15, color="#FFFFFF", weight="bold"),
-    )
-    fig2.add_annotation(
-        text=f"Freight<br>{freight_pct:.1f}%",
-        x=0.5,
-        y=0.5,
-        font_size=14,
-        showarrow=False,
-        font_color="#FFFFFF",
-    )
-    st.plotly_chart(
-        style_square_fig(
-            fig2,
-            "2. Revenue vs. Freight Split",
-            margin=dict(l=20, r=20, t=65, b=20),
-        ),
-        use_container_width=True,
-    )
+    def get_mom_delta(monthly_series):
+        s = monthly_series.sort_index()
+        if len(s) >= 2 and s.iloc[-2] > 0:
+            pct = ((s.iloc[-1] - s.iloc[-2]) / s.iloc[-2]) * 100
+            if pct >= 0:
+                return f"<span style='color:#00E5B0;'>▲ +{pct:.1f}% mo</span>", True
+            else:
+                return f"<span style='color:#F43F5E;'>▼ {pct:.1f}% mo</span>", False
+        return "<span style='color:#8A99B5;'>— 0.0% mo</span>", True
 
-with r1_c3:
-    top_states = (
-        df.groupby("customer_state")["total_amount"]
-        .sum()
-        .nlargest(7)
-        .reset_index()
+    total_revenue = df["total_amount"].sum()
+    total_product_sales = df["price"].sum()
+    total_freight = df["freight_value"].sum()
+    total_orders = df["order_id"].nunique()
+    total_customers = df["customer_unique_id"].nunique()
+    aov = total_revenue / total_orders if total_orders > 0 else 0
+    freight_pct = (
+        (total_freight / total_revenue * 100) if total_revenue > 0 else 0
     )
-    fig3 = px.bar(
-        top_states,
-        x="total_amount",
-        y="customer_state",
-        orientation="h",
-        text="total_amount",
-        color="total_amount",
-        color_continuous_scale=[VIOLET_PURPLE, CYAN_BLUE, MINT_GREEN],
-    )
-    fig3.update_traces(
-        texttemplate="%{text:,.0f}$",
-        textposition="outside",
-        cliponaxis=False,
-        textfont=dict(size=14, color="#FFFFFF", weight="bold"),
-    )
-    fig3.update_yaxes(categoryorder="total ascending")
-    st.plotly_chart(
-        style_square_fig(
-            fig3,
-            "3. Top 7 States by Revenue",
-            margin=dict(l=20, r=85, t=55, b=20),
-        ),
-        use_container_width=True,
-    )
+    avg_items = len(df) / total_orders if total_orders > 0 else 0
 
-# ROW 2: Top Categories | Payment Methods | Reviews
-r2_c1, r2_c2, r2_c3 = st.columns(3)
+    m_rev = df.groupby("Year_Month")["total_amount"].sum()
+    m_sales = df.groupby("Year_Month")["price"].sum()
+    m_orders = df.groupby("Year_Month")["order_id"].nunique()
+    m_aov = (m_rev / m_orders).fillna(0)
+    m_cust = df.groupby("Year_Month")["customer_unique_id"].nunique()
+    m_freight = df.groupby("Year_Month")["freight_value"].sum()
+    m_items = (
+        df.groupby("Year_Month")["order_id"].count() / m_orders
+    ).fillna(0)
 
-with r2_c1:
-    top_cats = (
-        df.groupby("category")["price"].sum().nlargest(8).reset_index()
+    st.markdown(
+        f"<span style='color:#8A99B5; font-size:13px;'>Active Filter: State = <b style='color:#00E5B0'>{selected_state}</b> | Category = <b style='color:#38BDF8'>{selected_cat}</b> | Payment = <b style='color:#A855F7'>{selected_pay}</b> | Year = <b style='color:#00E5B0'>{selected_year}</b></span>",
+        unsafe_allow_html=True,
     )
-    top_cats["short_cat"] = top_cats["category"].str.slice(0, 15)
-    fig4 = px.treemap(
-        top_cats,
-        path=["short_cat"],
-        values="price",
-        color="price",
-        color_continuous_scale=[
-            VIOLET_PURPLE,
-            ROYAL_BLUE,
-            CYAN_BLUE,
-            MINT_GREEN,
-        ],
-    )
-    fig4.update_traces(
-        textinfo="label+value",
-        texttemplate="<b>%{label}</b><br>$%{value:,.0f}",
-        textfont=dict(size=14, color="#FFFFFF"),
-    )
-    st.plotly_chart(
-        style_square_fig(
-            fig4,
-            "4. Top Categories Share (Treemap)",
-            margin=dict(l=10, r=10, t=55, b=10),
-        ),
-        use_container_width=True,
-    )
+    st.markdown("<div style='margin-bottom: 10px;'></div>", unsafe_allow_html=True)
 
-with r2_c2:
-    df_pay_sorted = df_payments[df_payments["val"] > 0].sort_values(
-        "val", ascending=True
-    )
-    fig5 = px.bar(
-        df_pay_sorted,
-        x="val",
-        y="payment_type",
-        orientation="h",
-        text="val",
-        color="payment_type",
-        color_discrete_sequence=FINOVATE_PALETTE,
-    )
-    fig5.update_traces(
-        texttemplate="%{text:,.0f}$",
-        textposition="outside",
-        cliponaxis=False,
-        textfont=dict(size=14, color="#FFFFFF", weight="bold"),
-    )
-    st.plotly_chart(
-        style_square_fig(
-            fig5,
-            "5. Payment Methods Allocation",
-            margin=dict(l=20, r=85, t=55, b=20),
-        ),
-        use_container_width=True,
-    )
+    k1, k2, k3, k4, k5, k6, k7 = st.columns(7)
+    with k1:
+        render_kpi(
+            "Total Revenue",
+            f"${total_revenue / 1e3:.1f}K",
+            get_mom_delta(m_rev),
+            "💵",
+        )
+    with k2:
+        render_kpi(
+            "Net Sales",
+            f"${total_product_sales / 1e3:.1f}K",
+            get_mom_delta(m_sales),
+            "📦",
+        )
+    with k3:
+        render_kpi(
+            "Total Orders", f"{total_orders:,}", get_mom_delta(m_orders), "🛍️"
+        )
+    with k4:
+        render_kpi(
+            "Avg Order (AOV)", f"${aov:,.2f}", get_mom_delta(m_aov), "📈"
+        )
+    with k5:
+        render_kpi(
+            "Customers", f"{total_customers:,}", get_mom_delta(m_cust), "👥"
+        )
+    with k6:
+        render_kpi(
+            "Total Freight",
+            f"${total_freight / 1e3:.1f}K",
+            get_mom_delta(m_freight),
+            "🚚",
+        )
+    with k7:
+        render_kpi(
+            "Items / Order", f"{avg_items:.2f}", get_mom_delta(m_items), "⚖️"
+        )
 
-with r2_c3:
-    fig6 = px.bar(
-        df_reviews,
-        x="review_score",
-        y="cnt",
-        text="cnt",
-        color="review_score",
-        color_continuous_scale=[CORAL_RED, VIOLET_PURPLE, MINT_GREEN],
-    )
-    fig6.update_traces(
-        texttemplate="%{text:,}",
-        textposition="outside",
-        cliponaxis=False,
-        textfont=dict(size=14, color="#FFFFFF", weight="bold"),
-    )
-    fig6.update_xaxes(title="Stars (1-5)")
-    st.plotly_chart(
-        style_square_fig(
-            fig6,
-            "6. Customer Review Scores",
-            margin=dict(l=20, r=25, t=55, b=20),
-        ),
-        use_container_width=True,
-    )
+    st.markdown("<div style='margin-bottom: 10px;'></div>", unsafe_allow_html=True)
 
-# ROW 3: Orders by Day | Peak Hours | Fulfillment Funnel
-r3_c1, r3_c2, r3_c3 = st.columns(3)
+    # ROW 1
+    r1_c1, r1_c2, r1_c3 = st.columns(3)
 
-with r3_c1:
-    days_order = [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-        "Sunday",
-    ]
-    dow = (
-        df.groupby("Day_of_Week")["order_id"]
-        .nunique()
-        .reindex(days_order)
-        .reset_index()
-    )
+    with r1_c1:
+        monthly = (
+            df.groupby("Year_Month")["total_amount"]
+            .sum()
+            .reset_index()
+            .sort_values("Year_Month")
+        )
+        fig1 = px.area(
+            monthly,
+            x="Year_Month",
+            y="total_amount",
+            markers=True,
+            color_discrete_sequence=[MINT_GREEN],
+        )
+        fig1.update_traces(
+            line=dict(color=MINT_GREEN, width=3, shape="spline"),
+            fillcolor="rgba(0, 229, 176, 0.18)",
+        )
+        st.plotly_chart(
+            style_square_fig(fig1, "1. Monthly Revenue Trend ($)"),
+            use_container_width=True,
+        )
+
+    with r1_c2:
+        comp_df = pd.DataFrame(
+            {
+                "Component": ["Product Sales", "Freight Cost"],
+                "Amount": [total_product_sales, total_freight],
+            }
+        )
+        fig2 = px.pie(
+            comp_df,
+            names="Component",
+            values="Amount",
+            hole=0.58,
+            color_discrete_sequence=[MINT_GREEN, VIOLET_PURPLE],
+        )
+        fig2.update_traces(
+            textinfo="percent+label",
+            textfont=dict(size=15, color="#FFFFFF", weight="bold"),
+        )
+        fig2.add_annotation(
+            text=f"Freight<br>{freight_pct:.1f}%",
+            x=0.5,
+            y=0.5,
+            font_size=14,
+            showarrow=False,
+            font_color="#FFFFFF",
+        )
+        st.plotly_chart(
+            style_square_fig(
+                fig2,
+                "2. Revenue vs. Freight Split",
+                margin=dict(l=20, r=20, t=65, b=20),
+            ),
+            use_container_width=True,
+        )
+
+    with r1_c3:
+        top_states = (
+            df.groupby("customer_state")["total_amount"]
+            .sum()
+            .nlargest(7)
+            .reset_index()
+        )
+        fig3 = px.bar(
+            top_states,
+            x="total_amount",
+            y="customer_state",
+            orientation="h",
+            text="total_amount",
+            color="total_amount",
+            color_continuous_scale=[VIOLET_PURPLE, CYAN_BLUE, MINT_GREEN],
+        )
+        fig3.update_traces(
+            texttemplate="%{text:,.0f}$",
+            textposition="outside",
+            cliponaxis=False,
+            textfont=dict(size=14, color="#FFFFFF", weight="bold"),
+        )
+        fig3.update_yaxes(categoryorder="total ascending")
+        st.plotly_chart(
+            style_square_fig(
+                fig3,
+                "3. Top 7 States by Revenue",
+                margin=dict(l=20, r=85, t=55, b=20),
+            ),
+            use_container_width=True,
+        )
+
+    # ROW 2
+    r2_c1, r2_c2, r2_c3 = st.columns(3)
+
+    with r2_c1:
+        top_cats = (
+            df.groupby("category")["price"].sum().nlargest(8).reset_index()
+        )
+        top_cats["short_cat"] = top_cats["category"].str.slice(0, 15)
+        fig4 = px.treemap(
+            top_cats,
+            path=["short_cat"],
+            values="price",
+            color="price",
+            color_continuous_scale=[
+                VIOLET_PURPLE,
+                ROYAL_BLUE,
+                CYAN_BLUE,
+                MINT_GREEN,
+            ],
+        )
+        fig4.update_traces(
+            textinfo="label+value",
+            texttemplate="<b>%{label}</b><br>$%{value:,.0f}",
+            textfont=dict(size=14, color="#FFFFFF"),
+        )
+        st.plotly_chart(
+            style_square_fig(
+                fig4,
+                "4. Top Categories Share (Treemap)",
+                margin=dict(l=10, r=10, t=55, b=10),
+            ),
+            use_container_width=True,
+        )
+
+    with r2_c2:
+        df_pay_sorted = df_payments[df_payments["val"] > 0].sort_values(
+            "val", ascending=True
+        )
+        fig5 = px.bar(
+            df_pay_sorted,
+            x="val",
+            y="payment_type",
+            orientation="h",
+            text="val",
+            color="payment_type",
+            color_discrete_sequence=FINOVATE_PALETTE,
+        )
+        fig5.update_traces(
+            texttemplate="%{text:,.0f}$",
+            textposition="outside",
+            cliponaxis=False,
+            textfont=dict(size=14, color="#FFFFFF", weight="bold"),
+        )
+        st.plotly_chart(
+            style_square_fig(
+                fig5,
+                "5. Payment Methods Allocation",
+                margin=dict(l=20, r=85, t=55, b=20),
+            ),
+            use_container_width=True,
+        )
+
+    with r2_c3:
+        fig6 = px.bar(
+            df_reviews,
+            x="review_score",
+            y="cnt",
+            text="cnt",
+            color="review_score",
+            color_continuous_scale=[CORAL_RED, VIOLET_PURPLE, MINT_GREEN],
+        )
+        fig6.update_traces(
+            texttemplate="%{text:,}",
+            textposition="outside",
+            cliponaxis=False,
+            textfont=dict(size=14, color="#FFFFFF", weight="bold"),
+        )
+        fig6.update_xaxes(title="Stars (1-5)")
+        st.plotly_chart(
+            style_square_fig(
+                fig6,
+                "6. Customer Review Scores",
+                margin=dict(l=20, r=25, t=55, b=20),
+            ),
+            use_container_width=True,
+        )
+
+    # ROW 3
+    r3_c1, r3_c2, r3_c3 = st.columns(3)
+
+    with r3_c1:
+        days_order = [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+        ]
+        dow = (
+            df.groupby("Day_of_Week")["order_id"]
+            .nunique()
+            .reindex(days_order)
+            .reset_index()
+        )
+        dow["Day_Short"] = dow["Day_of_Week"].str.slice(0, 3)
+        fig7 = px.bar(
+            dow,
+            x="Day_Short",
+            y="order_id",
+            text="order_id",
+            color="order_id",
+            color_continuous_scale=[VIOLET_PURPLE, CYAN_BLUE],
+        )
+        fig7.update_traces(
+            texttemplate="%{text:,}",
+            textposition="outside",
+            cliponaxis=False,
+            textfont=dict(size=14, color="#FFFFFF", weight="bold"),
+        )
+        st.plotly_chart(
+            style_square_fig(
+                fig7,
+                "7. Orders Volume by Day",
+                margin=dict(l=20, r=25, t=55, b=20),
+            ),
+            use_container_width=True,
+        )
+
+    with r3_c2:
+        hourly = df.groupby("Hour")["order_id"].nunique().reset_index()
+        fig8 = px.area(
+            hourly,
+            x="Hour",
+            y="order_id",
+            color_discrete_sequence=[VIOLET_PURPLE],
+        )
+        fig8.update_traces(
+            line=dict(color=VIOLET_PURPLE, width=3, shape="spline"),
+            fillcolor="rgba(139, 92, 246, 0.22)",
+        )
+        fig8.update_xaxes(title="Hour (0-23)")
+        st.plotly_chart(
+            style_square_fig(fig8, "8. Peak Shopping Hours Flow"),
+            use_container_width=True,
+        )
+
+    with r3_c3:
+        status_df = (
+            df.groupby("order_status")["order_id"]
+            .nunique()
+            .nlargest(5)
+            .reset_index()
+            .sort_values("order_id", ascending=False)
+        )
+        fig9 = go.Figure(
+            go.Funnel(
+                y=status_df["order_status"],
+                x=status_df["order_id"],
+                textinfo="value+percent initial",
+                textfont=dict(size=14, color="#FFFFFF", weight="bold"),
+                marker=dict(
+                    color=[
+                        MINT_GREEN,
+                        CYAN_BLUE,
+                        ROYAL_BLUE,
+                        VIOLET_PURPLE,
+                        CORAL_RED,
+                    ]
+                ),
+            )
+        )
+        st.plotly_chart(
+            style_square_fig(
+                fig9,
+                "9. Order Fulfillment Funnel (Top 5)",
+                margin=dict(l=20, r=25, t=55, b=20),
+            ),
+            use_container_width=True,
+        )
+
+    st.markdown("</div>", unsafe_allow_html=True)
