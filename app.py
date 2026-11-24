@@ -257,6 +257,7 @@ st.markdown(
         align-items: center;
         justify-content: space-between;
         height: 85px;
+        margin-bottom: 8px;
         transition: all 0.25s ease;
     }
     .kpi-card:hover {
@@ -337,7 +338,6 @@ st.markdown(
 TEAL_PRIMARY = "#0D9488"
 BLUE_ACCENT = "#2563EB"
 SKY_SOFT = "#0284C7"
-INDIGO_SOFT = "#4F46E5"
 ROSE_SOFT = "#E11D48"
 AMBER_SOFT = "#D97706"
 LIGHT_PALETTE = [
@@ -439,98 +439,75 @@ def load_full_data():
 
 @st.cache_data
 def load_healthcare_summary_data():
-    conditions = [
-        "Cancer",
-        "Heart Disease",
-        "Alzheimer's",
-        "Diabetes",
-        "Hypertension",
-        "Asthma",
-    ]
-    cond_rev_millions = [245.6, 228.4, 204.8, 192.5, 178.2, 162.34]
     df_cond = pd.DataFrame(
-        {"Medical_Condition": conditions, "Revenue_M": cond_rev_millions}
+        {
+            "Medical_Condition": [
+                "Cancer",
+                "Heart Disease",
+                "Alzheimer's",
+                "Diabetes",
+                "Hypertension",
+                "Asthma",
+            ],
+            "Revenue_M": [245.6, 228.4, 204.8, 192.5, 178.2, 162.34],
+        }
     )
-
-    hospitals = [
-        "Hospital A",
-        "Hospital B",
-        "Hospital C",
-        "Hospital D",
-        "Hospital E",
-    ]
-    hosp_rev_millions = [278.4, 254.2, 238.9, 226.1, 214.24]
-    hosp_doctors = [142, 128, 119, 112, 105]
     df_hosp = pd.DataFrame(
         {
-            "Hospital": hospitals,
-            "Revenue_M": hosp_rev_millions,
-            "Doctors": hosp_doctors,
+            "Hospital": [
+                "Hospital A",
+                "Hospital B",
+                "Hospital C",
+                "Hospital D",
+                "Hospital E",
+            ],
+            "Revenue_M": [278.4, 254.2, 238.9, 226.1, 214.24],
+            "Doctors": [142, 128, 119, 112, 105],
         }
     )
-
-    days_order = [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-        "Sunday",
-    ]
-    admissions_cnt = [8240, 8090, 8150, 7980, 7820, 7560, 7660]
-    df_days = pd.DataFrame(
-        {
-            "Admission_Day_Name": days_order,
-            "Day_Short": [d[:3] for d in days_order],
-            "Admissions": admissions_cnt,
-        }
-    )
-
-    age_groups = ["18-30", "31-45", "46-60", "61-75", "75+"]
-    age_patients = [8900, 11400, 13200, 12100, 9900]
     df_age = pd.DataFrame(
-        {"Age_Group": age_groups, "Patients": age_patients}
+        {
+            "Age_Group": ["18-30", "31-45", "46-60", "61-75", "75+"],
+            "Patients": [8900, 11400, 13200, 12100, 9900],
+        }
     )
-
-    return df_cond, df_hosp, df_days, df_age
+    return df_cond, df_hosp, df_age
 
 
 @st.cache_data
 def load_pepsi_summary_data():
-    years = ["2022", "2023", "2024", "2025", "2026"]
-    rev_m = [0.78, 0.94, 1.08, 1.22, 1.15]
-    profit_m = [0.26, 0.32, 0.37, 0.41, 0.39]
-    discount_k = [44.2, 52.8, 60.5, 68.1, 63.44]
     df_yr = pd.DataFrame(
         {
-            "Year": years,
-            "Revenue_M": rev_m,
-            "Net_Profit_M": profit_m,
-            "Discount_K": discount_k,
+            "Year": ["2022", "2023", "2024", "2025", "2026"],
+            "Revenue_M": [0.78, 0.94, 1.08, 1.22, 1.15],
+            "Net_Profit_M": [0.26, 0.32, 0.37, 0.41, 0.39],
+            "Discount_K": [44.2, 52.8, 60.5, 68.1, 63.44],
         }
     )
-
-    govs = [
-        "Cairo",
-        "Giza",
-        "Alexandria",
-        "Dakahlia",
-        "Sharqia",
-        "Gharbia",
-    ]
-    gov_rev_m = [1.34, 1.09, 0.88, 0.61, 0.56, 0.49]
-    df_gov = pd.DataFrame({"Governorate": govs, "Revenue_M": gov_rev_m})
-
-    categories = [
-        "Carbonated Cola",
-        "Zero Sugar",
-        "Flavored Sodas",
-        "Energy & Juices",
-    ]
-    cat_units_k = [138.0, 74.0, 62.0, 43.0]
-    df_cat = pd.DataFrame({"Category": categories, "Units_K": cat_units_k})
-
+    df_gov = pd.DataFrame(
+        {
+            "Governorate": [
+                "Cairo",
+                "Giza",
+                "Alexandria",
+                "Dakahlia",
+                "Sharqia",
+                "Gharbia",
+            ],
+            "Revenue_M": [1.34, 1.09, 0.88, 0.61, 0.56, 0.49],
+        }
+    )
+    df_cat = pd.DataFrame(
+        {
+            "Category": [
+                "Carbonated Cola",
+                "Zero Sugar",
+                "Flavored Sodas",
+                "Energy & Juices",
+            ],
+            "Units_K": [138.0, 74.0, 62.0, 43.0],
+        }
+    )
     return df_yr, df_gov, df_cat
 
 
@@ -818,7 +795,7 @@ st.markdown(
 pepsi_btn_label = (
     "🔽 إخفاء تفاصيل مشروع Pepsi Egypt Sales"
     if st.session_state.open_pepsi
-    else "🔍 اضغط لعرض التفاصيل والفيديو التوضيحي والداشبورد"
+    else "🔍 اضغط لعرض التفاصيل والفيديو التوضيحي والمؤشرات"
 )
 if st.button(pepsi_btn_label, key="btn_toggle_pepsi"):
     st.session_state.open_pepsi = not st.session_state.open_pepsi
@@ -931,110 +908,6 @@ if st.session_state.open_pepsi:
             "⭐",
         )
 
-    st.markdown("<div style='margin-bottom: 10px;'></div>", unsafe_allow_html=True)
-
-    pc1, pc2, pc3 = st.columns(3)
-
-    with pc1:
-        yr_plot = df_p_yr.copy()
-        yr_plot["Plot_Rev_M"] = yr_plot["Revenue_M"] * (gov_ratio * cat_ratio)
-        yr_plot["Plot_Profit_M"] = yr_plot["Net_Profit_M"] * (
-            gov_ratio * cat_ratio
-        )
-        if selected_p_year != "All Years (2022–2026)":
-            yr_plot = yr_plot[yr_plot["Year"] == selected_p_year]
-        fig_p1 = go.Figure()
-        fig_p1.add_trace(
-            go.Bar(
-                x=yr_plot["Year"],
-                y=yr_plot["Plot_Rev_M"],
-                name="Revenue (M)",
-                marker_color=BLUE_ACCENT,
-                text=yr_plot["Plot_Rev_M"].round(2),
-                texttemplate="%{text:.2f}M",
-                textposition="outside",
-            )
-        )
-        fig_p1.add_trace(
-            go.Bar(
-                x=yr_plot["Year"],
-                y=yr_plot["Plot_Profit_M"],
-                name="Net Profit (M)",
-                marker_color=TEAL_PRIMARY,
-                text=yr_plot["Plot_Profit_M"].round(2),
-                texttemplate="%{text:.2f}M",
-                textposition="outside",
-            )
-        )
-        fig_p1.update_layout(barmode="group")
-        st.plotly_chart(
-            style_square_fig(
-                fig_p1,
-                "1. Revenue vs. Net Profit by Year (EGP)",
-                margin=dict(l=20, r=25, t=55, b=20),
-            ),
-            use_container_width=True,
-        )
-
-    with pc2:
-        gov_plot = df_p_gov.copy()
-        gov_plot["Plot_Rev_M"] = gov_plot["Revenue_M"] * (
-            yr_ratio * cat_ratio
-        )
-        if selected_p_gov != "All Governorates":
-            gov_plot = gov_plot[gov_plot["Governorate"] == selected_p_gov]
-        gov_plot = gov_plot.sort_values("Plot_Rev_M", ascending=True)
-        fig_p2 = px.bar(
-            gov_plot,
-            x="Plot_Rev_M",
-            y="Governorate",
-            orientation="h",
-            text="Plot_Rev_M",
-            color="Plot_Rev_M",
-            color_continuous_scale=["#99F6E4", "#0D9488", "#1E3A8A"],
-        )
-        fig_p2.update_traces(
-            texttemplate="%{text:,.2f}M",
-            textposition="outside",
-            cliponaxis=False,
-            textfont=dict(size=13, color="#0F172A", weight="bold"),
-        )
-        st.plotly_chart(
-            style_square_fig(
-                fig_p2,
-                "2. Sales by Governorate (M EGP)",
-                margin=dict(l=20, r=75, t=55, b=20),
-            ),
-            use_container_width=True,
-        )
-
-    with pc3:
-        cat_plot = df_p_cat.copy()
-        cat_plot["Plot_Units_K"] = cat_plot["Units_K"] * (
-            yr_ratio * gov_ratio
-        )
-        if selected_p_cat != "All Categories":
-            cat_plot = cat_plot[cat_plot["Category"] == selected_p_cat]
-        fig_p3 = px.pie(
-            cat_plot,
-            names="Category",
-            values="Plot_Units_K",
-            hole=0.55,
-            color_discrete_sequence=LIGHT_PALETTE,
-        )
-        fig_p3.update_traces(
-            textinfo="percent+label",
-            textfont=dict(size=12, color="#0F172A", weight="bold"),
-        )
-        st.plotly_chart(
-            style_square_fig(
-                fig_p3,
-                "3. Units Volume by Category (K)",
-                margin=dict(l=15, r=15, t=55, b=15),
-            ),
-            use_container_width=True,
-        )
-
     st.markdown("</div>", unsafe_allow_html=True)
 
 
@@ -1074,7 +947,7 @@ st.markdown(
 hc_btn_label = (
     "🔽 إخفاء تفاصيل مشروع Healthcare"
     if st.session_state.open_healthcare
-    else "🔍 اضغط لعرض التفاصيل والفيديو التوضيحي والداشبورد"
+    else "🔍 اضغط لعرض التفاصيل والفيديو التوضيحي والمؤشرات"
 )
 if st.button(hc_btn_label, key="btn_toggle_hc"):
     st.session_state.open_healthcare = not st.session_state.open_healthcare
@@ -1105,7 +978,7 @@ if st.session_state.open_healthcare:
 
     st.markdown("<div style='margin-top: 18px;'></div>", unsafe_allow_html=True)
 
-    df_hc_cond, df_hc_hosp, df_hc_days, df_hc_age = load_healthcare_summary_data()
+    df_hc_cond, df_hc_hosp, df_hc_age = load_healthcare_summary_data()
 
     st.markdown('<div class="filter-bar">', unsafe_allow_html=True)
     hf1, hf2, hf3 = st.columns(3)
@@ -1188,106 +1061,11 @@ if st.session_state.open_healthcare:
             "🧾",
         )
 
-    st.markdown("<div style='margin-bottom: 10px;'></div>", unsafe_allow_html=True)
-
-    hc_c1, hc_c2, hc_c3 = st.columns(3)
-
-    with hc_c1:
-        cond_plot = df_hc_cond.copy()
-        cond_plot["Filtered_Rev_M"] = cond_plot["Revenue_M"] * (
-            hosp_ratio * age_ratio
-        )
-        if selected_hc_cond != "All Conditions":
-            cond_plot = cond_plot[
-                cond_plot["Medical_Condition"] == selected_hc_cond
-            ]
-        cond_plot = cond_plot.sort_values("Filtered_Rev_M", ascending=True)
-        fig_hc1 = px.bar(
-            cond_plot,
-            x="Filtered_Rev_M",
-            y="Medical_Condition",
-            orientation="h",
-            text="Filtered_Rev_M",
-            color="Filtered_Rev_M",
-            color_continuous_scale=["#99F6E4", "#0D9488", "#1E3A8A"],
-        )
-        fig_hc1.update_traces(
-            texttemplate="%{text:,.1f}M",
-            textposition="outside",
-            cliponaxis=False,
-            textfont=dict(size=13, color="#0F172A", weight="bold"),
-        )
-        st.plotly_chart(
-            style_square_fig(
-                fig_hc1,
-                "1. Revenue by Medical Condition (M)",
-                margin=dict(l=20, r=75, t=55, b=20),
-            ),
-            use_container_width=True,
-        )
-
-    with hc_c2:
-        hosp_plot = df_hc_hosp.copy()
-        hosp_plot["Filtered_Rev_M"] = hosp_plot["Revenue_M"] * (
-            cond_ratio * age_ratio
-        )
-        if selected_hc_hosp != "All Hospitals":
-            hosp_plot = hosp_plot[hosp_plot["Hospital"] == selected_hc_hosp]
-        hosp_plot = hosp_plot.sort_values("Filtered_Rev_M", ascending=True)
-        fig_hc2 = px.bar(
-            hosp_plot,
-            x="Filtered_Rev_M",
-            y="Hospital",
-            orientation="h",
-            text="Filtered_Rev_M",
-            color="Hospital",
-            color_discrete_sequence=LIGHT_PALETTE,
-        )
-        fig_hc2.update_traces(
-            texttemplate="%{text:,.1f}M",
-            textposition="outside",
-            cliponaxis=False,
-            textfont=dict(size=13, color="#0F172A", weight="bold"),
-        )
-        st.plotly_chart(
-            style_square_fig(
-                fig_hc2,
-                "2. Revenue by Hospital (M)",
-                margin=dict(l=20, r=75, t=55, b=20),
-            ),
-            use_container_width=True,
-        )
-
-    with hc_c3:
-        days_plot = df_hc_days.copy()
-        days_plot["Filtered_Admissions"] = (
-            days_plot["Admissions"] * scale
-        ).round().astype(int)
-        fig_hc3 = px.area(
-            days_plot,
-            x="Day_Short",
-            y="Filtered_Admissions",
-            markers=True,
-            color_discrete_sequence=[TEAL_PRIMARY],
-        )
-        fig_hc3.update_traces(
-            line=dict(color=TEAL_PRIMARY, width=3, shape="spline"),
-            fillcolor="rgba(13, 148, 136, 0.14)",
-        )
-        st.plotly_chart(
-            style_square_fig(
-                fig_hc3,
-                "3. Admissions by Day of Week",
-                margin=dict(l=20, r=25, t=55, b=20),
-            ),
-            use_container_width=True,
-        )
-
     st.markdown("</div>", unsafe_allow_html=True)
 
 
 # =========================================================
-# PROJECT 3: Olist E-Commerce Executive Dashboard (Brief + Toggle)
+# PROJECT 3: Olist E-Commerce Executive Dashboard (Full Original)
 # =========================================================
 st.markdown("<div style='margin-top: 22px;'></div>", unsafe_allow_html=True)
 
